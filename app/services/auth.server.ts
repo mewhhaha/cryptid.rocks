@@ -3,7 +3,7 @@ import { Auth0Profile, Auth0Strategy } from "remix-auth-auth0";
 import { createCookieSessionStorage } from "remix";
 
 declare global {
-  const SESSION_SECRETS: string;
+  const SESSION_SECRET: string;
   const AUTH0_CALLBACK_URL: string;
   const AUTH0_CLIENT_ID: string;
   const AUTH0_CLIENT_SECRET: string;
@@ -17,7 +17,7 @@ export const sessionStorage = createCookieSessionStorage({
     sameSite: "lax", // this helps with CSRF
     path: "/", // remember to add this so the cookie will work in all routes
     httpOnly: true, // for security reasons, make this cookie http only
-    secrets: [SESSION_SECRETS], // replace this with an actual secret
+    secrets: [SESSION_SECRET], // replace this with an actual secret
     secure: process.env.NODE_ENV === "production", // enable this in prod only
   },
 });

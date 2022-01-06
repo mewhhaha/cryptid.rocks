@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "name": "jacob",
+  "description": "",
+  "license": "",
+  "type": "module",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "./portfolio.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "esbuild --define:process.env.NODE_ENV='\"production\"' --bundle --format=esm --outfile=dist/index.mjs --allow-overwrite ./portfolio.ts",
+    "deploy": "wrangler publish --new-class Portfolio"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.2.0",
+    "@cloudflare/wrangler": "^1.19.7",
+    "cron-schedule": "^3.0.4",
+    "esbuild": "^0.14.1",
+    "typescript": "^4.5.2"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

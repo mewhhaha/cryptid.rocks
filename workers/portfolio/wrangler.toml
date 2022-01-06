@@ -1,0 +1,23 @@
+compatibility_date = "2022-01-06"
+name = "portfolio"
+type = "javascript"
+
+workers_dev = true
+
+[durable_objects]
+bindings = [
+  {name = "PORTFOLIO", class_name = "Portfolio"},
+]
+
+[build]
+command = "pnpm build"
+
+[build.upload]Geta
+dir = "dist"
+format = "modules"
+main = "index.mjs"
+
+[secrets]
+AUTH0_CLIENT_ID
+AUTH0_CLIENT_SECRET
+AUTH0_DOMAIN

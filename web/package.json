@@ -59,9 +59,6 @@
   "engines": {
     "node": ">=14"
   },
-  "workspaces": [
-    "workers/portfolio"
-  ],
   "sideEffects": false,
   "main": "dist/worker.js"
 }

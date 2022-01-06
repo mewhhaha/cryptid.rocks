@@ -10,8 +10,6 @@ declare global {
   const AUTH0_DOMAIN: string;
 }
 
-const SESSION_SECRETS = ["78c4d266-8c6f-467d-9ecc-c3822fa315f1"]
-
 // export the whole sessionStorage object
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -19,7 +17,7 @@ export const sessionStorage = createCookieSessionStorage({
     sameSite: "lax", // this helps with CSRF
     path: "/", // remember to add this so the cookie will work in all routes
     httpOnly: true, // for security reasons, make this cookie http only
-    secrets: SESSION_SECRETS, // replace this with an actual secret
+    secrets: [SESSION_SECRETS], // replace this with an actual secret
     secure: process.env.NODE_ENV === "production", // enable this in prod only
   },
 });

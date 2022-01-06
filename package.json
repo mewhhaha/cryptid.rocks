@@ -4,7 +4,8 @@
   "description": "",
   "license": "",
   "scripts": {
-    "build": "cross-env NODE_ENV=production remix build",
+    "build": "pnpm build:css && pnpm build:remix",
+    "build:remix": "cross-env NODE_ENV=production remix build",
     "build:css": "tailwindcss -o ./app/tailwind.css --minify",
     "dev": "cross-env NODE_ENV=development concurrently \"pnpm dev:remix\" \"pnpm dev:wrangler\" \"pnpm dev:css\"",
     "postinstall": "remix setup cloudflare-pages",

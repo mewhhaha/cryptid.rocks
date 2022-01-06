@@ -1,7 +1,7 @@
 import React from "react";
 import { useSimplePriceQuery } from "~/queries";
 import { PortfolioValue } from "./PortfolioValue";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "workers/portfolio/portfolio";
 
 type PortfolioTotalValueProps = {
   portfolio: PortfolioCoin[];

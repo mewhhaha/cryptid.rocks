@@ -6,7 +6,7 @@ import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
 import { authenticator } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "workers/portfolio/portfolio";
 
 type LoaderData = { user: Auth0Profile; portfolio: PortfolioCoin[] };
 

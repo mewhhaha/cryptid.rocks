@@ -1,5 +1,5 @@
 import React from "react";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "workers/portfolio/portfolio";
 import { useSimplePriceQuery } from "~/queries";
 import { PortfolioValueChange } from "./PortfolioValueChange";
 

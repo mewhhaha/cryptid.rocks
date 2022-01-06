@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "workers/portfolio/portfolio";
 import cn from "classnames";
 
 type PortfolioQuantityInputProps = {

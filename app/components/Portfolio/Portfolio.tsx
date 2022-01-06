@@ -1,7 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import { Setter } from "~/types";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "workers/portfolio/portfolio";
 import { useSimplePriceQuery } from "~/queries";
 import { PortfolioTotalChange } from "./PortfolioTotalChange";
 import { PortfolioTotalValue } from "./PortfolioTotalValue";

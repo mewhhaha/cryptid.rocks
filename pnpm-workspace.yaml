@@ -1,4 +1,0 @@
-packages:
-  - workers/*
-  - web
-  - functions

@@ -1,5 +1,5 @@
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
-import * as build from "../web/build";
+import * as build from "../build";
 
 const handleRequest = createPagesFunctionHandler({
   build,

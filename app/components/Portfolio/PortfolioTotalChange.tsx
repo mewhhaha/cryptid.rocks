@@ -1,6 +1,6 @@
-import { useSimplePriceQuery } from "~/queries";
-import { PortfolioCoin } from "~/types";
 import React from "react";
+import { PortfolioCoin } from "portfolio-worker";
+import { useSimplePriceQuery } from "~/queries";
 import { PortfolioValueChange } from "./PortfolioValueChange";
 
 type PortfolioTotalChangeProps = {

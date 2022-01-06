@@ -10,7 +10,8 @@ import {
 } from "@reach/combobox";
 import coinList from "~/data/coins.json";
 import cn from "classnames";
-import { CoinInfo, PortfolioCoin, Setter } from "~/types";
+import { Setter } from "~/types";
+import { CoinInfo, PortfolioCoin } from "portfolio-worker";
 
 type CoinListQuery = CoinInfo[];
 

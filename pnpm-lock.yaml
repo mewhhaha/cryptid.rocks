@@ -28,6 +28,7 @@ importers:
       eslint-plugin-jsx-a11y: ^6.5.1
       eslint-plugin-react: ^7.27.1
       eslint-plugin-react-hooks: ^4.3.0
+      portfolio-worker: workspace:*
       postcss: ^8.4.5
       prettier: ^2.4.1
       react: ^17.0.2
@@ -75,6 +76,7 @@ importers:
       eslint-plugin-jsx-a11y: 6.5.1_eslint@8.6.0
       eslint-plugin-react: 7.28.0_eslint@8.6.0
       eslint-plugin-react-hooks: 4.3.0_eslint@8.6.0
+      portfolio-worker: link:workers/portfolio
       postcss: 8.4.5
       prettier: 2.5.1
       tailwindcss: 3.0.11_cefe482e8d38053bbf3d5815e0c551b3

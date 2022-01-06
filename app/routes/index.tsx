@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Portfolio } from "~/components/Portfolio";
 import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
-import { PortfolioCoin } from "~/types";
 import { authenticator } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
+import { PortfolioCoin } from "portfolio-worker";
 
 type LoaderData = { user: Auth0Profile; portfolio: PortfolioCoin[] };
 

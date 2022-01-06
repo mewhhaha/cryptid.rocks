@@ -1,6 +1,6 @@
 import useQuery from 'swr'
 
-export const useGetQuery = <A extends any>(url: string) => {
+export const useGetQuery = <A,>(url: string) => {
   return useQuery<A>(url, () => fetch(url).then(r => r.json()))
 }
 

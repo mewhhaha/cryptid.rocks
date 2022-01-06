@@ -26,10 +26,10 @@ export const sessionStorage = createCookieSessionStorage({
 // strategies will return and will be stored in the session
 export const authenticator = new Authenticator<Auth0Profile>(sessionStorage);
 
-console.log(AUTH0_CALLBACK_URL)
-console.log(AUTH0_CLIENT_ID)
-console.log(AUTH0_CLIENT_SECRET)
-console.log(AUTH0_DOMAIN)
+console.log(process.env.AUTH0_CALLBACK_URL)
+console.log(process.env.AUTH0_CLIENT_ID)
+console.log(process.env.AUTH0_CLIENT_SECRET)
+console.log(process.env.AUTH0_DOMAIN)
 
 const auth0Strategy = new Auth0Strategy(
   {

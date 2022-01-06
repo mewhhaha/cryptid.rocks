@@ -11,7 +11,7 @@ import {
 import coinList from "~/data/coins.json";
 import cn from "classnames";
 import { Setter } from "~/types";
-import { CoinInfo, PortfolioCoin } from "workers/portfolio/portfolio";
+import { CoinInfo, PortfolioCoin } from "portfolio-worker";
 
 type CoinListQuery = CoinInfo[];
 

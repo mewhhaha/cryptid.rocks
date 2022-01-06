@@ -53,11 +53,15 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "portfolio-worker": "*"
   },
   "engines": {
     "node": ">=14"
   },
+  "workspaces": [
+    "workers/portfolio"
+  ],
   "sideEffects": false,
   "main": "dist/worker.js"
 }

@@ -33,8 +33,6 @@ console.log(AUTH0_CLIENT_ID)
 console.log(AUTH0_CLIENT_SECRET)
 console.log(AUTH0_DOMAIN)
 
-console.log(process.env)
-
 const auth0Strategy = new Auth0Strategy(
   {
     callbackURL: AUTH0_CALLBACK_URL,

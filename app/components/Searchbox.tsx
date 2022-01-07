@@ -110,25 +110,11 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
   const combobox = useComboboxState();
   const coinList = useCoinList(combobox.value);
 
-  const handleOnChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const coinName = e.target.value;
-      const coin = coinLookup[coinName];
-      setPortfolio((portfolio) => {
-        if (portfolio.find((x) => x.id === coin.id)) return portfolio;
-        return [...portfolio, { ...coin, quantity: 0 }];
-      });
-      combobox.setValue("");
-    },
-    [combobox, setPortfolio]
-  );
-
   return (
-    <div className="relative mt-1">
+    <div className="relative w-full max-w-2xl mt-1">
       <Combobox
         className="relative w-full px-8 py-2 text-xl text-left bg-white rounded-full shadow-md outline-none cursor-default sm:text-2xl focus:ring-2 focus:ring-opacity-75 focus:ring-blue-400 focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500"
         state={combobox}
-        onChange={handleOnChange}
         placeholder="Search for crypto to add"
       />
 
@@ -141,9 +127,19 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
         ) : (
           coinList.map((coin, index) => {
             const active = coin.name === combobox.value;
+
+            const handleOnClick = () => {
+              setPortfolio((portfolio) => {
+                if (portfolio.find((x) => x.id === coin.id)) return portfolio;
+                return [...portfolio, { ...coin, quantity: 0 }];
+              });
+              combobox.setValue("");
+            };
+
             return (
               <ComboboxItem
                 key={index}
+                onClick={handleOnClick}
                 className={cn(
                   active ? "text-yellow-900 bg-yellow-100" : "text-gray-900",
                   "cursor-default select-none relative py-2 px-4 hover:bg-gray-200"

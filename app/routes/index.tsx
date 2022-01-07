@@ -38,8 +38,8 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
           socket?.close();
         }
       } else {
-        const s = new WebSocket(`wss://${host}/websocket`);
-        s.onmessage = (msg) => {
+        const ws = new WebSocket(`wss://${host}/websocket`);
+        ws.onmessage = (msg) => {
           const data = JSON.parse(msg.data);
 
           if (isPortfolioCoins(data)) {
@@ -51,7 +51,7 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
           }
         };
 
-        setSocket(new WebSocket(`wss://${window.location.host}/websocket`));
+        setSocket(ws);
       }
     };
 

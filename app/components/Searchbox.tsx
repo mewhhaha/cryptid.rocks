@@ -157,7 +157,7 @@ const SearchboxContent: React.VFC<SearchboxContentProps> = ({
         placeholder="Search for crypto to add"
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
-        onChange={(e) => setSearch(() => e.currentTarget.value)}
+        onChange={(e) => setSearch(() => e.target.value)}
       />
 
       <Transition

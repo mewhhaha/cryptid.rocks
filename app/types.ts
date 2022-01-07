@@ -15,10 +15,10 @@ type Env = {
 };
 
 
-export type Context = EventContext<Env, '', unknown>;
+export type WorkerContext = EventContext<Env, '', unknown>;
 
 export interface LoaderFunction {
-  (param: Omit<DataFunctionArgs, 'context'> & { context: Context }): ReturnType<LF>;
+  (param: Omit<DataFunctionArgs, 'context'> & { context: WorkerContext }): ReturnType<LF>;
 }
 
 export type ActionFunction = AF

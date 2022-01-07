@@ -1,6 +1,6 @@
 import { auth } from "~/services/auth.server";
-import { LoaderFunction } from "~/types";
+import { ActionFunction } from "~/types";
 
-export const loader: LoaderFunction = async ({ request, context }) => {
+export const action: ActionFunction = async ({ request, context }) => {
   await auth(context).logout(request, { redirectTo: "/login" });
 };

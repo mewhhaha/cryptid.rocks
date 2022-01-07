@@ -7,6 +7,7 @@ import { auth } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
 import { PortfolioCoin } from "portfolio-worker";
 import { LoaderFunction } from "~/types";
+import { fetchPortfolio } from "~/services/portfolio.server";
 
 type LoaderData = { user: Auth0Profile; portfolio: PortfolioCoin[] };
 
@@ -18,16 +19,10 @@ export const loader: LoaderFunction = async ({
     failureRedirect: "/login",
   });
 
-  const id = context.env.PORTFOLIO.idFromName(user.id);
-  const roomObject = context.env.PORTFOLIO.get(id);
-  const newUrl = new URL(request.url);
+  const response = await fetchPortfolio(context, user.id, "/coins");
+  const coins = await response.json();
 
-  newUrl.pathname = "/coins";
-
-  const response = await roomObject.fetch(newUrl.toString(), request);
-  const portfolio = (await response.json()) as PortfolioCoin[];
-
-  return { user, portfolio };
+  return { user, portfolio: coins as PortfolioCoin[] };
 };
 
 const usePortfolioSubscription = (initial: PortfolioCoin[]) => {

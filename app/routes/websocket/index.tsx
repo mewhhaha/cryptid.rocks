@@ -1,4 +1,5 @@
 import { auth } from "~/services/auth.server";
+import { fetchPortfolio } from "~/services/portfolio.server";
 import { LoaderFunction } from "~/types";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
@@ -6,11 +7,5 @@ export const loader: LoaderFunction = async ({ request, context }) => {
     failureRedirect: "/login",
   });
 
-  const id = context.env.PORTFOLIO.idFromName(user.id);
-  const roomObject = context.env.PORTFOLIO.get(id);
-  const newUrl = new URL(request.url);
-
-  newUrl.pathname = "/websocket";
-
-  return roomObject.fetch(newUrl.toString(), request);
+  return await fetchPortfolio(context, user.id, "/websocket");
 };

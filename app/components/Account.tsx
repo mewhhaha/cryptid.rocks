@@ -20,7 +20,7 @@ export const Account: React.VFC<AccountProps> = ({ user }) => {
           </Menu.Button>
         }
       >
-        <Form action="/auth/logout">
+        <Form method="post" action="/auth/logout">
           <DropdownMenuItem type="submit">
             <LogoutIcon className="w-5 h-5" />
             <span className="pl-2 whitespace-nowrap">Sign out</span>

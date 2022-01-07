@@ -1,11 +1,11 @@
 import { Authenticator } from "remix-auth";
 import { Auth0Profile, Auth0Strategy } from "remix-auth-auth0";
 import { createCookie, createCloudflareKVSessionStorage } from "remix";
-import { Context } from "~/types";
+import { WorkerContext } from "~/types";
 
 let singleton: Authenticator<Auth0Profile>;
 
-export const auth = ({ env, request }: Context) => {
+export const auth = ({ env, request }: WorkerContext) => {
   if (singleton !== undefined) return singleton;
 
   const sessionCookie = createCookie("_session", {

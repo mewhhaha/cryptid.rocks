@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Portfolio } from "~/components/Portfolio";
 import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
-import { authenticator } from "~/services/auth.server";
+import { auth } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
 import { PortfolioCoin } from "portfolio-worker";
 
@@ -14,7 +14,8 @@ export const loader: LoaderFunction = async ({
   request,
   context,
 }): Promise<LoaderData> => {
-  const user = await authenticator.isAuthenticated(request, {
+  console.log("hello", context);
+  const user = await auth(context).isAuthenticated(request, {
     failureRedirect: "/login",
   });
 

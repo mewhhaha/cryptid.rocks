@@ -3,6 +3,7 @@ import * as build from "../build";
 
 const handleRequest = createPagesFunctionHandler({
   build,
+  getLoadContext: (context) => context.env,
 });
 
 export function onRequest(context) {

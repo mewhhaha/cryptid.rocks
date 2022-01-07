@@ -1,6 +1,6 @@
 import { LoaderFunction } from "remix";
-import { authenticator } from "~/services/auth.server";
+import { auth } from "~/services/auth.server";
 
-export const loader: LoaderFunction = ({ request }) => {
-  return authenticator.logout(request, { redirectTo: "/login" });
+export const loader: LoaderFunction = ({ request, context }) => {
+  return auth(context).logout(request, { redirectTo: "/login" });
 };

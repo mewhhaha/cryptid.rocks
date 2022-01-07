@@ -25,7 +25,7 @@ export const auth = ({ env, request }: WorkerContext) => {
 
   const auth0Strategy = new Auth0Strategy(
     {
-      callbackURL: url.toString(),
+      callbackURL: "/auth/callback",
       clientID: env.AUTH0_CLIENT_ID,
       clientSecret: env.AUTH0_CLIENT_SECRET,
       domain: env.AUTH0_DOMAIN,

@@ -21,7 +21,11 @@ type Env = {
   AUTH0_DOMAIN: string;
 };
 
+let singleton: Authenticator<Auth0Profile>;
+
 export const auth = ({ env, request }: EventContext<Env, '', unknown>) => {
+  if (singleton !== undefined) return singleton;
+
   const sessionCookie = createCookie("_session", {
     sameSite: "lax", // this helps with CSRF
     path: "/", // remember to add this so the cookie will work in all routes
@@ -56,5 +60,6 @@ export const auth = ({ env, request }: EventContext<Env, '', unknown>) => {
 
   authenticator.use(auth0Strategy);
 
+  singleton = authenticator;
   return authenticator;
 };

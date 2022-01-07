@@ -8,6 +8,6 @@ export const loader: LoaderFunction = ({ request, context }) => {
   });
 };
 
-export const action: ActionFunction = async ({ request, context }) => {
-  await auth(context).authenticate("auth0", request);
+export const action: ActionFunction = ({ request, context }) => {
+  return auth(context).authenticate("auth0", request);
 };

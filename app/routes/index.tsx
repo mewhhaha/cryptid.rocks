@@ -65,7 +65,7 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
   useEffect(() => {
     if (!socket) return;
 
-    if (socket.OPEN) {
+    if (socket.OPEN && !socket.CONNECTING) {
       socket.send(JSON.stringify(portfolio));
     }
   }, [portfolio, socket]);

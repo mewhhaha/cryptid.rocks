@@ -6,8 +6,8 @@ export const loader: LoaderFunction = async ({ request, context }) => {
     failureRedirect: "/login",
   });
 
-  const id = context.PORTFOLIO.idFromName(user.id);
-  const roomObject = context.PORTFOLIO.get(id);
+  const id = context.env.PORTFOLIO.idFromName(user.id);
+  const roomObject = context.env.PORTFOLIO.get(id);
   const newUrl = new URL(request.url);
 
   newUrl.pathname = "/websocket";

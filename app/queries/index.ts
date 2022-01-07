@@ -1,9 +1,5 @@
 import useQuery from 'swr'
 
-export const useGetQuery = <A,>(url: string) => {
-  return useQuery<A>(url, () => fetch(url).then(r => r.json()))
-}
-
 export type SimplePriceDataQuery<Coin extends string, Vs extends string> = Record<
   Coin,
   Record<Vs, number> & Record<`${Vs}_24h_change`, number | null>

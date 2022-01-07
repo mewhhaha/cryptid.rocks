@@ -21,7 +21,7 @@ type Env = {
   AUTH0_DOMAIN: string;
 };
 
-export const auth = (env: Env) => {
+export const auth = ({ env, request }: EventContext<Env, '', unknown>) => {
   const sessionCookie = createCookie("_session", {
     sameSite: "lax", // this helps with CSRF
     path: "/", // remember to add this so the cookie will work in all routes
@@ -39,9 +39,12 @@ export const auth = (env: Env) => {
   // strategies will return and will be stored in the session
   const authenticator = new Authenticator<Auth0Profile>(sessionStorage);
 
+  const url = new URL(request.url);
+  url.pathname = env.AUTH0_CALLBACK_URL
+
   const auth0Strategy = new Auth0Strategy(
     {
-      callbackURL: env.AUTH0_CALLBACK_URL,
+      callbackURL: url.toString(),
       clientID: env.AUTH0_CLIENT_ID,
       clientSecret: env.AUTH0_CLIENT_SECRET,
       domain: env.AUTH0_DOMAIN,

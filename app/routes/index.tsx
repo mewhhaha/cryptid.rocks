@@ -1,5 +1,4 @@
 import { useLoaderData } from "remix";
-import type { LoaderFunction } from "remix";
 import React, { useEffect, useState } from "react";
 import { Portfolio } from "~/components/Portfolio";
 import { Searchbox } from "~/components/Searchbox";
@@ -7,6 +6,7 @@ import { Account } from "~/components/Account";
 import { auth } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
 import { PortfolioCoin } from "portfolio-worker";
+import { LoaderFunction } from "~/types";
 
 type LoaderData = { user: Auth0Profile; portfolio: PortfolioCoin[] };
 
@@ -14,18 +14,18 @@ export const loader: LoaderFunction = async ({
   request,
   context,
 }): Promise<LoaderData> => {
-  console.log("hello", context);
   const user = await auth(context).isAuthenticated(request, {
     failureRedirect: "/login",
   });
 
-  const id = context.PORTFOLIO.idFromName(user.id);
-  const roomObject = context.PORTFOLIO.get(id);
+  const id = context.env.PORTFOLIO.idFromName(user.id);
+  const roomObject = context.env.PORTFOLIO.get(id);
   const newUrl = new URL(request.url);
 
   newUrl.pathname = "/coins";
 
-  const portfolio = roomObject.fetch(newUrl.toString(), request);
+  const response = await roomObject.fetch(newUrl.toString(), request);
+  const portfolio = (await response.json()) as PortfolioCoin[];
 
   return { user, portfolio };
 };
@@ -35,7 +35,9 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
   const [socket, setSocket] = useState<WebSocket>();
 
   useEffect(() => {
-    const host = process.env.DEV ? "jacob-7h6.pages.dev" : window.location.host;
+    const host = process.env.DEV
+      ? "cryptid-worker.pages.dev"
+      : window.location.host;
 
     const onchange = () => {
       if (document.visibilityState === "hidden") {

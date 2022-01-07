@@ -1,5 +1,5 @@
-import { LoaderFunction } from "remix";
 import { auth } from "~/services/auth.server";
+import { LoaderFunction } from "~/types";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
   const user = await auth(context).isAuthenticated(request, {

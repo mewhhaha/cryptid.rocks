@@ -1,5 +1,4 @@
 import {
-  ActionFunction,
   Links,
   LinksFunction,
   LiveReload,

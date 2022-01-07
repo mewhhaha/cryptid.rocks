@@ -11,7 +11,7 @@
     "postinstall": "remix setup cloudflare-pages",
     "dev:remix": "remix watch",
     "dev:css": "tailwindcss -o ./app/tailwind.css --watch",
-    "dev:wrangler": "wrangler pages dev ./public --watch ./build",
+    "dev:wrangler": "wrangler pages dev ./public --watch ./build --do PORTFOLIO=Portfolio",
     "start": "npm run dev:wrangler"
   },
   "dependencies": {

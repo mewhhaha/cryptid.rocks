@@ -1,8 +1,7 @@
 import { DataFunctionArgs } from '@remix-run/server-runtime';
-import type * as React from 'react'
 import type { LoaderFunction as LF, ActionFunction as AF } from 'remix'
 
-export type Setter<A> = React.Dispatch<React.SetStateAction<A>>
+export type Setter<A> = (f: (prev: A) => A) => void
 
 type Env = {
   SESSION_SECRET: string;

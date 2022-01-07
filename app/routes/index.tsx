@@ -1,11 +1,11 @@
 import { useLoaderData } from "remix";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Portfolio } from "~/components/Portfolio";
 import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
 import { auth } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
-import { isPortfolioCoins, PortfolioCoin } from "portfolio-worker";
+import portfolio, { isPortfolioCoins, PortfolioCoin } from "portfolio-worker";
 import { LoaderFunction } from "~/types";
 import { fetchPortfolio } from "~/services/portfolio.server";
 
@@ -25,34 +25,12 @@ export const loader: LoaderFunction = async ({
   return { user, portfolio: coins as PortfolioCoin[] };
 };
 
-const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
-  const [portfolio, setPortfolio] = useState(initial);
-  const [socket, setSocket] = useState<WebSocket>();
+const useVisibility = () => {
+  const [visibility, setVisibility] = useState(document.visibilityState);
 
   useEffect(() => {
-    const host = window.location.host;
-
     const onchange = () => {
-      if (document.visibilityState === "hidden") {
-        if (socket?.OPEN) {
-          socket?.close();
-        }
-      } else {
-        const ws = new WebSocket(`wss://${host}/websocket`);
-        ws.onmessage = (msg) => {
-          const data = JSON.parse(msg.data);
-
-          if (isPortfolioCoins(data)) {
-            if (JSON.stringify(portfolio) === JSON.stringify(data)) return;
-            console.log(data);
-            setPortfolio(data);
-          } else {
-            console.log(data);
-          }
-        };
-
-        setSocket(ws);
-      }
+      setVisibility(document.visibilityState);
     };
 
     document.addEventListener("visibilitychange", onchange);
@@ -60,35 +38,70 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
     return () => {
       document.removeEventListener("visibilitychange", onchange);
     };
-  }, [portfolio, socket]);
+  }, []);
 
-  useEffect(() => {
-    if (!socket) return;
-    socket.onopen = () => {
-      console.log("open");
+  return visibility;
+};
+
+const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
+  const [status, setStatus] = useState<"open" | "closed">("closed");
+  const [portfolio, setPortfolio] = useState(initial);
+  const [socket, setSocket] = useState<WebSocket>();
+  const visibility = useVisibility();
+
+  const { current: startSocket } = useRef(() => {
+    const ws = new WebSocket(`wss://${window.location.host}/websocket`);
+    ws.onmessage = (msg: MessageEvent<string>) => {
+      const data = JSON.parse(msg.data);
+
+      if (isPortfolioCoins(data)) {
+        setPortfolio(data);
+      } else {
+        console.log(data);
+      }
+    };
+    ws.onopen = () => {
+      setStatus("open");
+    };
+    ws.onclose = () => {
+      setStatus("closed");
     };
 
-    socket.onclose = () => {
-      console.log("close");
-    };
-  }, [socket]);
+    setSocket(ws);
+
+    return ws;
+  });
 
   useEffect(() => {
-    if (!socket) return;
+    if (visibility === "hidden") return;
 
-    if (socket.OPEN && !socket.CONNECTING) {
-      socket.send(JSON.stringify(portfolio));
-      console.log(portfolio);
-    }
-  }, [portfolio, socket]);
+    const ws = startSocket();
+    return () => {
+      ws.close();
+    };
+  }, [startSocket, visibility]);
 
-  return [portfolio, setPortfolio] as const;
+  return {
+    value: portfolio,
+    status,
+    mutate: useCallback(
+      (f: (prev: PortfolioCoin[]) => PortfolioCoin[]) => {
+        const value = f(portfolio);
+
+        setPortfolio(value);
+        if (socket && socket.OPEN && !socket.CONNECTING) {
+          socket.send(JSON.stringify(value));
+        }
+      },
+      [portfolio, socket]
+    ),
+  };
 };
 
 const Index: React.VFC = () => {
   const { user, portfolio: initial } = useLoaderData<LoaderData>();
 
-  const [portfolio, setPortfolio] = usePortfolioSubscription(initial);
+  const { value, status, mutate } = usePortfolioSubscription(initial);
 
   return (
     <main className="flex flex-col items-center w-screen h-screen">
@@ -97,10 +110,10 @@ const Index: React.VFC = () => {
       </header>
       <div className="flex-none w-full h-4 sm:h-10" />
       <div className="flex items-center justify-center w-full px-4">
-        <Searchbox setPortfolio={setPortfolio} />
+        <Searchbox setPortfolio={mutate} />
       </div>
       <div className="flex justify-center w-full">
-        <Portfolio portfolio={portfolio} setPortfolio={setPortfolio} />
+        <Portfolio portfolio={value} setPortfolio={mutate} />
       </div>
     </main>
   );

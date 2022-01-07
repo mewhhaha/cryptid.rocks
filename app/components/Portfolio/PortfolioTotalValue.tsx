@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSimplePriceQuery } from "~/queries";
 import { PortfolioValue } from "./PortfolioValue";
 import { PortfolioCoin } from "portfolio-worker";

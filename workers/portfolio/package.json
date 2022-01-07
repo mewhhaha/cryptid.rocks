@@ -12,9 +12,10 @@
   ],
   "scripts": {
     "build": "esbuild --define:process.env.NODE_ENV='\"production\"' --bundle --format=esm --outfile=dist/index.mjs --allow-overwrite ./portfolio.ts",
-    "deploy": "wrangler publish --new-class Portfolio"
+    "deploy": "wrangler publish dist/index.mjs --name portfolio"
   },
   "devDependencies": {
+    "wrangler": "pages",
     "@cloudflare/workers-types": "^3.2.0",
     "cron-schedule": "^3.0.4",
     "esbuild": "^0.14.1",

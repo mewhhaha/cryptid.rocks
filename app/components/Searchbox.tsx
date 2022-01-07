@@ -30,18 +30,8 @@ const createCoinDictionary = () => {
   return dictionary;
 };
 
-const createCoinLookup = () => {
-  const lookup: Record<string, CoinInfo> = {};
-
-  coinList.forEach((coin) => {
-    lookup[coin.name] = coin;
-  });
-
-  return lookup;
-};
-
+const fullWidth = { className: "w-full" };
 const coinDictionary = createCoinDictionary();
-const coinLookup = createCoinLookup();
 const coinListSize = 20;
 
 const useCoinList = (query: string) => {
@@ -121,12 +111,13 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
       <div className="flex">
         <ComboboxPopover
           state={combobox}
+          wrapperProps={fullWidth}
           className="relative w-full max-w-2xl py-1 mt-4 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         >
           {coinList.length === 0 ? (
             <div className="w-full px-4 py-2">No results</div>
           ) : (
-            coinList.map((coin, index) => {
+            coinList.map((coin) => {
               const active = coin.name === combobox.activeValue;
 
               const handleOnClick = () => {
@@ -139,7 +130,7 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
 
               return (
                 <ComboboxItem
-                  key={index}
+                  key={coin.name}
                   onClick={handleOnClick}
                   className={cn(
                     active ? "text-yellow-900 bg-yellow-100" : "text-gray-900",

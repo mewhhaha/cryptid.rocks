@@ -106,7 +106,7 @@ const Index: React.VFC = () => {
   return (
     <main className="flex flex-col items-center w-screen h-screen">
       <header className="flex items-center justify-center w-full py-8">
-        <Account user={user} />
+        <Account user={user} status={status} />
       </header>
       <div className="flex-none w-full h-4 sm:h-10" />
       <div className="flex items-center justify-center w-full px-4">

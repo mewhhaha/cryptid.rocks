@@ -41,6 +41,7 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
         const s = new WebSocket(`wss://${host}/websocket`);
         s.onmessage = (message) => {
           const data: PortfolioCoin[] = JSON.parse(message.data);
+          console.log("received", data);
           if (JSON.stringify(portfolio) === JSON.stringify(data)) return;
 
           setPortfolio(data);
@@ -56,6 +57,17 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
       document.removeEventListener("visibilitychange", onchange);
     };
   }, [portfolio, socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.onopen = () => {
+      console.log("open");
+    };
+
+    socket.onclose = () => {
+      console.log("close");
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (!socket) return;

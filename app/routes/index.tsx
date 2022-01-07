@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({
 };
 
 const useVisibility = () => {
-  const [visibility, setVisibility] = useState(document.visibilityState);
+  const [visibility, setVisibility] = useState<VisibilityState>("visible");
 
   useEffect(() => {
     const onchange = () => {

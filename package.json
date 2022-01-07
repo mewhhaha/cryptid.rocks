@@ -4,7 +4,8 @@
   "description": "",
   "license": "",
   "scripts": {
-    "build": "npm run build:css && npm run build:remix",
+    "build": "npm run build:packages && npm run build:css && npm run build:remix",
+    "build:packages": "npm run build --workspace workers",
     "build:remix": "cross-env NODE_ENV=production remix build",
     "build:css": "tailwindcss -o ./app/tailwind.css --minify",
     "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:remix\" \"npm run dev:wrangler\" \"npm run dev:css\"",
@@ -53,8 +54,7 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "prettier": "^2.4.1",
-    "portfolio-worker": "*"
+    "prettier": "^2.4.1"
   },
   "engines": {
     "node": ">=14"

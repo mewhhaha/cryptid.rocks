@@ -3,12 +3,12 @@ import { Form } from "remix";
 
 const Login: React.FC = () => {
   return (
-    <main className="flex flex-col items-center h-screen w-screen">
-      <header className="flex w-full justify-center items-center py-8">
-        <Form action="/auth/login" className="w-12 h-12 flex-none">
+    <main className="flex flex-col items-center w-screen h-screen">
+      <header className="flex items-center justify-center w-full py-8">
+        <Form action="/auth/callback" className="flex-none w-12 h-12">
           <button
             type="submit"
-            className="w-12 h-12 overflow-hidden rounded-full p-4 focus:outline-none focus-visible:outline-none bg-gray-400 focus-visible:ring focus-visible:ring-blue-500 opacity-50 shadow-md hover:opacity-100 "
+            className="w-12 h-12 p-4 overflow-hidden bg-gray-400 rounded-full shadow-md opacity-50 focus:outline-none focus-visible:outline-none focus-visible:ring focus-visible:ring-blue-500 hover:opacity-100 "
           >
             <FingerPrintIcon />
           </button>

@@ -10,14 +10,10 @@ type PortfolioTotalValueProps = {
 export const PortfolioTotalValue: React.VFC<PortfolioTotalValueProps> = ({
   portfolio: coins,
 }) => {
-  const { data, mutate } = useSimplePriceQuery(
+  const { data } = useSimplePriceQuery(
     coins.map((c) => c.id),
     "sek"
   );
-
-  useEffect(() => {
-    mutate();
-  }, [coins, mutate]);
 
   const lookupQuantity: Record<string, number> = {};
   coins.forEach((c) => {

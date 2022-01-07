@@ -42,20 +42,11 @@ export const isPortfolioCoins = (data: unknown): data is PortfolioCoin[] => {
 
 export class Portfolio implements DurableObject {
   storage: DurableObjectStorage;
-  latest: PortfolioCoin[];
   sessions: WebSocket[];
 
   constructor(controller: DurableObjectState) {
     this.storage = controller.storage;
     this.sessions = [];
-    this.latest = []
-
-    controller.blockConcurrencyWhile(async () => {
-      const stored = await this.storage.get<PortfolioCoin[]>("latest");
-      if (stored) {
-        this.latest = stored;
-      }
-    });
   }
 
   async fetch(request: Request) {
@@ -74,8 +65,8 @@ export class Portfolio implements DurableObject {
       }
 
       case "/coins": {
-        const stored = await this.storage.get<string>("latest");
-        return new Response(stored || JSON.stringify([]), { status: 200 })
+        const latest = await this.storage.get<string>("latest");
+        return new Response(latest || JSON.stringify([]), { status: 200 })
       }
 
       default:
@@ -84,9 +75,13 @@ export class Portfolio implements DurableObject {
   }
 
   async handleSession(webSocket: WebSocket) {
+    const latest = await this.storage.get<string>("latest")
+
     webSocket.accept();
 
     this.sessions.push(webSocket);
+
+    webSocket.send(latest || JSON.stringify([]))
 
     webSocket.addEventListener("message", async (msg) => {
       try {
@@ -104,6 +99,8 @@ export class Portfolio implements DurableObject {
         }
       }
     });
+
+
 
     const closeOrErrorHandler = () => {
       this.sessions = this.sessions.filter((member) => member !== webSocket);

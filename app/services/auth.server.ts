@@ -3,11 +3,8 @@ import { Auth0Profile, Auth0Strategy } from "remix-auth-auth0";
 import { createCookie, createCloudflareKVSessionStorage } from "remix";
 import { WorkerContext } from "~/types";
 
-let singleton: Authenticator<Auth0Profile>;
 
 export const auth = ({ env, request }: WorkerContext) => {
-  if (singleton !== undefined) return singleton;
-
   const sessionCookie = createCookie("_session", {
     sameSite: "lax", // this helps with CSRF
     path: "/", // remember to add this so the cookie will work in all routes
@@ -40,6 +37,5 @@ export const auth = ({ env, request }: WorkerContext) => {
 
   authenticator.use(auth0Strategy);
 
-  singleton = authenticator;
   return authenticator;
 };

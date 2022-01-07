@@ -7,7 +7,7 @@ const Login: React.FC = () => {
       <header className="flex items-center justify-center w-full py-8">
         <Form
           method="post"
-          action="/auth/login"
+          action="/auth/callback"
           className="flex-none w-12 h-12"
         >
           <button

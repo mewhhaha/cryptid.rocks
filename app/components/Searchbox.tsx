@@ -113,7 +113,7 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
   return (
     <div className="relative w-full max-w-2xl mt-1">
       <Combobox
-        className="relative w-full px-8 py-2 text-xl text-left bg-white rounded-full shadow-md outline-none cursor-default sm:text-2xl focus:ring-2 focus:ring-opacity-75 focus:ring-blue-400 focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500"
+        className="w-full px-8 py-2 text-xl text-left bg-white rounded-full shadow-md outline-none cursor-default sm:text-2xl focus:ring-2 focus:ring-opacity-75 focus:ring-blue-400 focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500"
         state={combobox}
         placeholder="Search for crypto to add"
       />
@@ -123,7 +123,7 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
         className="absolute w-full py-1 mt-4 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
       >
         {coinList.length === 0 ? (
-          <li className="px-4 py-2">No results</li>
+          <div className="w-full px-4 py-2">No results</div>
         ) : (
           coinList.map((coin, index) => {
             const active = coin.name === combobox.value;
@@ -142,7 +142,7 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
                 onClick={handleOnClick}
                 className={cn(
                   active ? "text-yellow-900 bg-yellow-100" : "text-gray-900",
-                  "cursor-default select-none relative py-2 px-4 hover:bg-gray-200"
+                  "cursor-default select-none relative py-2 px-4 hover:bg-gray-200 w-full"
                 )}
                 value={coin.name}
               >

@@ -5,7 +5,7 @@ import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
 import { auth } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
-import { PortfolioCoin } from "portfolio-worker";
+import { isPortfolioCoins, PortfolioCoin } from "portfolio-worker";
 import { LoaderFunction } from "~/types";
 import { fetchPortfolio } from "~/services/portfolio.server";
 
@@ -39,12 +39,16 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
         }
       } else {
         const s = new WebSocket(`wss://${host}/websocket`);
-        s.onmessage = (message) => {
-          const data: PortfolioCoin[] = JSON.parse(message.data);
-          console.log("received", data);
-          if (JSON.stringify(portfolio) === JSON.stringify(data)) return;
+        s.onmessage = (msg) => {
+          const data = JSON.parse(msg.data);
 
-          setPortfolio(data);
+          if (isPortfolioCoins(data)) {
+            if (JSON.stringify(portfolio) === JSON.stringify(data)) return;
+            console.log(data);
+            setPortfolio(data);
+          } else {
+            console.log(data);
+          }
         };
 
         setSocket(new WebSocket(`wss://${window.location.host}/websocket`));
@@ -74,6 +78,7 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
 
     if (socket.OPEN && !socket.CONNECTING) {
       socket.send(JSON.stringify(portfolio));
+      console.log(portfolio);
     }
   }, [portfolio, socket]);
 

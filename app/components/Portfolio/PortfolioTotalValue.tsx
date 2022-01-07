@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSimplePriceQuery } from "~/queries";
 import { PortfolioValue } from "./PortfolioValue";
 import { PortfolioCoin } from "portfolio-worker";
@@ -10,10 +10,14 @@ type PortfolioTotalValueProps = {
 export const PortfolioTotalValue: React.VFC<PortfolioTotalValueProps> = ({
   portfolio: coins,
 }) => {
-  const { data } = useSimplePriceQuery(
+  const { data, mutate } = useSimplePriceQuery(
     coins.map((c) => c.id),
     "sek"
   );
+
+  useEffect(() => {
+    mutate();
+  }, [coins, mutate]);
 
   const lookupQuantity: Record<string, number> = {};
   coins.forEach((c) => {

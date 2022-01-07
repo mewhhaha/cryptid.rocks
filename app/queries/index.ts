@@ -13,9 +13,12 @@ export const useSimplePriceQuery = <Coin extends string, Vs extends string>(
   id: string | string[],
   vs: string extends Vs ? never : Vs,
 ) => {
-  return useGetQuery<SimplePriceDataQuery<Coin, Vs>>(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${[id]
-      .flat()
-      .join()}&vs_currencies=${vs}&include_24hr_change=true`,
+
+  const url = new URL(`https://api.coingecko.com/api/v3/simple/price?ids=${[id]
+    .flat()
+    .join()}&vs_currencies=${vs}&include_24hr_change=true`)
+
+  return useQuery<SimplePriceDataQuery<Coin, Vs>>(
+    url.hostname + url.pathname, () => fetch(url.toString()).then(r => r.json())
   )
 }

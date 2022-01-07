@@ -35,9 +35,7 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
   const [socket, setSocket] = useState<WebSocket>();
 
   useEffect(() => {
-    const host = process.env.DEV
-      ? "cryptid-worker.pages.dev"
-      : window.location.host;
+    const host = window.location.host;
 
     const onchange = () => {
       if (document.visibilityState === "hidden") {
@@ -53,7 +51,7 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
           setPortfolio(data);
         };
 
-        setSocket(new WebSocket(`wss://${host}/websocket`));
+        setSocket(new WebSocket(`wss://${window.location.host}/websocket`));
       }
     };
 

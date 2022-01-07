@@ -129,13 +129,9 @@ export const Portfolio: React.VFC<PortfolioProps> = ({
         <PortfolioTotalEntry portfolio={portfolio} />
         {portfolio.map((coin) => {
           const handleSetEntry = (entry: Partial<PortfolioCoin>) => {
-            setPortfolio((prev) => ({
-              ...prev,
-              updatedAt: new Date(),
-              coins: prev.map((x) =>
-                x.id === coin.id ? { ...x, ...entry } : x
-              ),
-            }));
+            setPortfolio((prev) =>
+              prev.map((x) => (x.id === coin.id ? { ...x, ...entry } : x))
+            );
           };
 
           const handleDeleteEntry = () => {

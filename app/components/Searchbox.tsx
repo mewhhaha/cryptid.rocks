@@ -120,13 +120,13 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
 
       <ComboboxPopover
         state={combobox}
-        className="absolute w-full py-1 mt-4 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+        className="relative w-full max-w-2xl py-1 mt-4 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
       >
         {coinList.length === 0 ? (
           <div className="w-full px-4 py-2">No results</div>
         ) : (
           coinList.map((coin, index) => {
-            const active = coin.name === combobox.value;
+            const active = coin.name === combobox.activeValue;
 
             const handleOnClick = () => {
               setPortfolio((portfolio) => {

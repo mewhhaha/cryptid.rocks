@@ -20,12 +20,9 @@ export const auth = ({ env, request }: WorkerContext) => {
 
   const authenticator = new Authenticator<Auth0Profile>(sessionStorage);
 
-  const url = new URL(request.url);
-  url.pathname = env.AUTH0_CALLBACK_URL
-
   const auth0Strategy = new Auth0Strategy(
     {
-      callbackURL: url.toString(),
+      callbackURL: new URL(request.url).origin + env.AUTH0_CALLBACK_URL,
       clientID: env.AUTH0_CLIENT_ID,
       clientSecret: env.AUTH0_CLIENT_SECRET,
       domain: env.AUTH0_DOMAIN,

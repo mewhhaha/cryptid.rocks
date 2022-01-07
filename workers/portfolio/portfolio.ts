@@ -15,7 +15,7 @@ export type PortfolioCoin = CoinInfo & {
   quantity: number
 }
 
-const isCoin = (data: unknown | PortfolioCoin): data is PortfolioCoin => {
+export const isCoin = (data: unknown | PortfolioCoin): data is PortfolioCoin => {
   if (typeof data !== 'object') return false;
   if (data === null) return false;
   if (!('id' in data)) return false;
@@ -33,7 +33,7 @@ const isCoin = (data: unknown | PortfolioCoin): data is PortfolioCoin => {
   return true;
 }
 
-const isPortfolioCoins = (data: unknown): data is PortfolioCoin[] => {
+export const isPortfolioCoins = (data: unknown): data is PortfolioCoin[] => {
   if (!Array.isArray(data)) return false;
   if (!data.every(isCoin)) return false;
 
@@ -74,8 +74,8 @@ export class Portfolio implements DurableObject {
       }
 
       case "/coins": {
-        const stored = await this.storage.get<PortfolioCoin[]>("latest");
-        return new Response(JSON.stringify(stored ?? []), { status: 200 })
+        const stored = await this.storage.get<string>("latest");
+        return new Response(stored || JSON.stringify([]), { status: 200 })
       }
 
       default:
@@ -93,9 +93,9 @@ export class Portfolio implements DurableObject {
         const data = JSON.parse(msg.data as string)
 
         if (isPortfolioCoins(data)) {
-          this.broadcast(data)
+          this.broadcast(msg.data)
 
-          await this.storage.put("latest", data);
+          await this.storage.put("latest", msg.data);
         }
 
       } catch (err) {

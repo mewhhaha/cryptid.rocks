@@ -7,8 +7,7 @@ import {
 } from "ariakit/combobox";
 import coinList from "~/data/coins.json";
 import cn from "classnames";
-import { Setter } from "~/types";
-import { CoinInfo, PortfolioCoin } from "portfolio-worker";
+import { CoinInfo } from "portfolio-worker";
 import { usePortfolio } from "~/contexts/portfolio";
 
 type CoinListQuery = CoinInfo[];

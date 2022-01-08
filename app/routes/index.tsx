@@ -16,12 +16,11 @@ import { LoaderFunction } from "~/types";
 import { fetchPortfolio } from "~/services/portfolio.server";
 import { PortfolioProvider } from "~/contexts/portfolio";
 import { PriceProvider } from "~/contexts/price";
-import { createPriceUrl, SimplePrice, useSimplePriceQuery } from "~/queries";
+import { useSimplePriceQuery } from "~/queries";
 
 type LoaderData = {
   user: Auth0Profile;
   portfolio: PortfolioCoin[];
-  price: SimplePrice<"sek">;
 };
 
 export const loader: LoaderFunction = async ({
@@ -36,14 +35,7 @@ export const loader: LoaderFunction = async ({
     r.json<PortfolioCoin[]>()
   );
 
-  const price = await fetch(
-    createPriceUrl(
-      portfolio.map((c) => c.id),
-      "sek"
-    )
-  ).then((r) => r.json<SimplePrice<"sek">>());
-
-  return { user, portfolio, price };
+  return { user, portfolio };
 };
 
 const useVisibility = () => {
@@ -125,22 +117,17 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
 };
 
 const Index: React.VFC = () => {
-  const {
-    user,
-    portfolio: initialPortfolio,
-    price: initialPrice,
-  } = useLoaderData<LoaderData>();
+  const { user, portfolio: initialPortfolio } = useLoaderData<LoaderData>();
 
   const portfolio = usePortfolioSubscription(initialPortfolio);
-  const { data: priceData } = useSimplePriceQuery(
+  const price = useSimplePriceQuery(
     portfolio.data.map((c) => c.id),
-    "sek",
-    initialPrice
+    "sek"
   );
 
   return (
     <PortfolioProvider value={portfolio}>
-      <PriceProvider value={priceData}>
+      <PriceProvider value={price}>
         <main className="flex flex-col items-center w-screen h-screen">
           <header className="flex items-center justify-center w-full py-8">
             <Account user={user} />

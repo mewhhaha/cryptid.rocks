@@ -7,7 +7,7 @@ type PortfolioValueProps = {
 
 export const PortfolioValue: React.VFC<PortfolioValueProps> = ({ total }) => {
   return (
-    <div className="h-12">
+    <div>
       {total.toPrecision(8)}
       <PortfolioCurrencyChip currency="SEK" />
     </div>

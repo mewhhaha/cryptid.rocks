@@ -1,9 +1,9 @@
-import React from 'react'
-import { PortfolioCurrencyChip } from './PortfolioCurrency'
+import React from "react";
+import { PortfolioCurrencyChip } from "./PortfolioCurrency";
 
 type PortfolioPriceProps = {
-  price: number
-}
+  price: number;
+};
 
 export const PortfolioPrice: React.VFC<PortfolioPriceProps> = ({ price }) => {
   return (
@@ -11,5 +11,5 @@ export const PortfolioPrice: React.VFC<PortfolioPriceProps> = ({ price }) => {
       <span>{price}</span>
       <PortfolioCurrencyChip currency="SEK" />
     </div>
-  )
-}
+  );
+};

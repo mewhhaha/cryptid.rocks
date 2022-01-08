@@ -19,7 +19,7 @@ export const PortfolioTotalValue: React.VFC<PortfolioTotalValueProps> = ({
 
   switch (price) {
     case undefined:
-      return <span className="w-full h-10 rounded-xl bg-gray animate-pulse" />;
+      return <div className="w-full h-12 rounded-xl bg-gray animate-pulse" />;
     default: {
       const total = Object.entries(price).reduce(
         (curr, [id, next]) => next.sek * lookupQuantity[id] + curr,

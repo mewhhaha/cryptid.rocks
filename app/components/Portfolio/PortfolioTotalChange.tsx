@@ -19,7 +19,7 @@ export const PortfolioTotalChange: React.VFC<PortfolioTotalChangeProps> = ({
 
   switch (price) {
     case undefined:
-      return <div className="invisible w-full h-full sr-only">?</div>;
+      return <div className="invisible w-full h-full">?</div>;
     default: {
       const total = Object.entries(price).reduce(
         (curr, [id, next]) => next.sek * lookupQuantity[id] + curr,

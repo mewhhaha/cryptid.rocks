@@ -1,4 +1,5 @@
 import {
+  ErrorBoundaryComponent,
   Links,
   LinksFunction,
   LiveReload,
@@ -16,6 +17,30 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
+};
+
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  console.error(error);
+
+  return (
+    <html lang="en">
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <div>
+          <h1 className="text-xl font-bold">Error</h1>
+          <p className="text-red-300">{error.message}</p>
+          <p className="font-bold">The stack trace is:</p>
+          <pre>{error.stack}</pre>
+        </div>
+        <Scripts />
+        {process.env.NODE_ENV === "development" && <LiveReload />}
+      </body>
+    </html>
+  );
 };
 
 export default function App() {

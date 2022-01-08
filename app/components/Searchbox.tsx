@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Transition } from "@headlessui/react";
 import {
   Combobox,
   useComboboxState,

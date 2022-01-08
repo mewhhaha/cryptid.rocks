@@ -5,7 +5,7 @@ import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
 import { auth } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
-import portfolio, { isPortfolioCoins, PortfolioCoin } from "portfolio-worker";
+import { isPortfolioCoins, PortfolioCoin } from "portfolio-worker";
 import { LoaderFunction } from "~/types";
 import { fetchPortfolio } from "~/services/portfolio.server";
 

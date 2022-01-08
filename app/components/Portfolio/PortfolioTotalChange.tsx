@@ -22,7 +22,7 @@ export const PortfolioTotalChange: React.VFC<PortfolioTotalChangeProps> = ({
 
   switch (data) {
     case undefined:
-      return <span className="w-full rounded-xl bg-gray animate-pulse" />;
+      return <span className="w-full h-10 rounded-xl bg-gray animate-pulse" />;
     default: {
       const total = Object.entries(data).reduce(
         (curr, [id, next]) => next.sek * lookupQuantity[id] + curr,

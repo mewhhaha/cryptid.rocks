@@ -5,13 +5,15 @@ import { DropdownMenu, DropdownMenuItem } from "./DropdownMenu";
 import { Auth0Profile } from "remix-auth-auth0";
 import { Form } from "remix";
 import cn from "classnames";
+import { usePortfolio } from "~/contexts/portfolio";
 
 type AccountProps = {
   user: Auth0Profile;
-  status: "open" | "closed";
 };
 
-export const Account: React.VFC<AccountProps> = ({ user, status }) => {
+export const Account: React.VFC<AccountProps> = ({ user }) => {
+  const { status } = usePortfolio();
+
   return (
     <div className="flex-none w-12 h-12">
       <DropdownMenu

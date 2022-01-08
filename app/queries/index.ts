@@ -1,21 +1,27 @@
-import useQuery from 'swr'
+import useQuery from "swr";
 
-export const useGetQuery = <A,>(url: string) => {
-  return useQuery<A>(url, () => fetch(url).then(r => r.json()))
+export const createPriceUrl = <Vs extends string>(id: string | string[], vs: string extends Vs ? never : Vs) => {
+  const ids = [id].flat().join();
+  return `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${vs}&include_24hr_change=true`;
 }
 
-export type SimplePriceDataQuery<Coin extends string, Vs extends string> = Record<
-  Coin,
-  Record<Vs, number> & Record<`${Vs}_24h_change`, number | null>
->
 
-export const useSimplePriceQuery = <Coin extends string, Vs extends string>(
+export type SimplePrice<
+  Vs extends string
+  > = Record<
+    string,
+    Record<Vs, number> & Record<`${Vs}_24h_change`, number | null>
+  >;
+
+export const useSimplePriceQuery = <Vs extends string>(
   id: string | string[],
   vs: string extends Vs ? never : Vs,
+  initial: SimplePrice<Vs>
 ) => {
-  return useGetQuery<SimplePriceDataQuery<Coin, Vs>>(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${[id]
-      .flat()
-      .join()}&vs_currencies=${vs}&include_24hr_change=true`,
-  )
-}
+
+  return useQuery<SimplePrice<Vs>>(
+    createPriceUrl(id, vs),
+    (url) => fetch(url).then((r) => r.json()),
+    { fallbackData: initial }
+  );
+};

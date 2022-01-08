@@ -10,6 +10,8 @@ import { PortfolioCoinEntryMenu } from "./PortfolioCoinEntryMenu";
 import { PortfolioQuantityInput } from "./PortfolioQuantityInput";
 import { PortfolioValue } from "./PortfolioValue";
 import { PortfolioPrice } from "./PortfolioPrice";
+import { usePortfolio } from "~/contexts/portfolio";
+import { usePrice } from "~/contexts/price";
 
 type PortfolioTotalEntryProps = {
   portfolio: PortfolioCoin[];
@@ -48,7 +50,7 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
   setEntry,
   deleteEntry,
 }) => {
-  const { data } = useSimplePriceQuery(id, "sek");
+  const price = usePrice();
 
   return (
     <li className="flex flex-col w-full max-w-3xl rounded-b shadow-md">
@@ -78,8 +80,8 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
         <dl className="flex flex-col px-4">
           <dt className="font-semibold text-gray-500">Price</dt>
           <dd className="flex items-center h-full">
-            {data ? (
-              <PortfolioPrice price={data[id].sek} />
+            {price ? (
+              <PortfolioPrice price={price[id].sek} />
             ) : (
               <span className="w-full rounded-xl bg-gray animate-pulse" />
             )}
@@ -88,8 +90,8 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
         <dl className="flex flex-col px-4">
           <dt className="font-semibold text-gray-500">Value</dt>
           <dd className="flex items-center h-full">
-            {data ? (
-              <PortfolioValue total={data[id].sek * quantity} />
+            {price ? (
+              <PortfolioValue total={price[id].sek * quantity} />
             ) : (
               <span className="w-full rounded-xl bg-gray animate-pulse" />
             )}
@@ -98,8 +100,8 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
         <dl className="flex flex-col px-4">
           <dt className="font-semibold text-gray-500">Change</dt>
           <dd className="flex items-center h-full">
-            {data ? (
-              <PortfolioValueChange change={data[id].sek_24h_change ?? 0} />
+            {price ? (
+              <PortfolioValueChange change={price[id].sek_24h_change ?? 0} />
             ) : (
               <span className="w-full rounded-xl bg-gray animate-pulse" />
             )}
@@ -110,15 +112,8 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
   );
 };
 
-type PortfolioProps = {
-  portfolio: PortfolioCoin[];
-  setPortfolio: Setter<PortfolioCoin[]>;
-};
-
-export const Portfolio: React.VFC<PortfolioProps> = ({
-  portfolio,
-  setPortfolio,
-}) => {
+export const Portfolio: React.VFC = () => {
+  const { data: portfolio, mutate } = usePortfolio();
   return (
     <div
       className={cn("flex flex-col flex-grow items-center", {
@@ -129,13 +124,13 @@ export const Portfolio: React.VFC<PortfolioProps> = ({
         <PortfolioTotalEntry portfolio={portfolio} />
         {portfolio.map((coin) => {
           const handleSetEntry = (entry: Partial<PortfolioCoin>) => {
-            setPortfolio((prev) =>
+            mutate((prev) =>
               prev.map((x) => (x.id === coin.id ? { ...x, ...entry } : x))
             );
           };
 
           const handleDeleteEntry = () => {
-            setPortfolio((prev) => prev.filter((x) => x.id !== coin.id));
+            mutate((prev) => prev.filter((x) => x.id !== coin.id));
           };
 
           return (

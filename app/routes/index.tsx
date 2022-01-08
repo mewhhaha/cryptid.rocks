@@ -1,5 +1,11 @@
 import { useLoaderData } from "remix";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Portfolio } from "~/components/Portfolio";
 import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
@@ -8,8 +14,15 @@ import { Auth0Profile } from "remix-auth-auth0";
 import { isPortfolioCoins, PortfolioCoin } from "portfolio-worker";
 import { LoaderFunction } from "~/types";
 import { fetchPortfolio } from "~/services/portfolio.server";
+import { PortfolioProvider } from "~/contexts/portfolio";
+import { PriceProvider } from "~/contexts/price";
+import { createPriceUrl, SimplePrice, useSimplePriceQuery } from "~/queries";
 
-type LoaderData = { user: Auth0Profile; portfolio: PortfolioCoin[] };
+type LoaderData = {
+  user: Auth0Profile;
+  portfolio: PortfolioCoin[];
+  price: SimplePrice<"sek">;
+};
 
 export const loader: LoaderFunction = async ({
   request,
@@ -19,10 +32,18 @@ export const loader: LoaderFunction = async ({
     failureRedirect: "/login",
   });
 
-  const response = await fetchPortfolio(context, user.id, "/coins");
-  const coins = await response.json();
+  const portfolio = await fetchPortfolio(context, user.id, "/coins").then((r) =>
+    r.json<PortfolioCoin[]>()
+  );
 
-  return { user, portfolio: coins as PortfolioCoin[] };
+  const price = await fetch(
+    createPriceUrl(
+      portfolio.map((c) => c.id),
+      "sek"
+    )
+  ).then((r) => r.json<SimplePrice<"sek">>());
+
+  return { user, portfolio, price };
 };
 
 const useVisibility = () => {
@@ -81,41 +102,59 @@ const usePortfolioSubscription = (initial: PortfolioCoin[]) => {
     };
   }, [startSocket, visibility]);
 
-  return {
-    value: portfolio,
-    status,
-    mutate: useCallback(
-      (f: (prev: PortfolioCoin[]) => PortfolioCoin[]) => {
-        const value = f(portfolio);
+  const mutate = useCallback(
+    (f: (prev: PortfolioCoin[]) => PortfolioCoin[]) => {
+      const value = f(portfolio);
 
-        setPortfolio(value);
-        if (socket && socket.OPEN && !socket.CONNECTING) {
-          socket.send(JSON.stringify(value));
-        }
-      },
-      [portfolio, socket]
-    ),
-  };
+      setPortfolio(value);
+      if (socket && socket.OPEN && !socket.CONNECTING) {
+        socket.send(JSON.stringify(value));
+      }
+    },
+    [portfolio, socket]
+  );
+
+  return useMemo(
+    () => ({
+      data: portfolio,
+      status,
+      mutate,
+    }),
+    [mutate, portfolio, status]
+  );
 };
 
 const Index: React.VFC = () => {
-  const { user, portfolio: initial } = useLoaderData<LoaderData>();
+  const {
+    user,
+    portfolio: initialPortfolio,
+    price: initialPrice,
+  } = useLoaderData<LoaderData>();
 
-  const { value, status, mutate } = usePortfolioSubscription(initial);
+  const portfolio = usePortfolioSubscription(initialPortfolio);
+  const { data: priceData } = useSimplePriceQuery(
+    portfolio.data.map((c) => c.id),
+    "sek",
+    initialPrice
+  );
 
   return (
-    <main className="flex flex-col items-center w-screen h-screen">
-      <header className="flex items-center justify-center w-full py-8">
-        <Account user={user} status={status} />
-      </header>
-      <div className="flex-none w-full h-4 sm:h-10" />
-      <div className="flex items-center justify-center w-full px-4">
-        <Searchbox setPortfolio={mutate} />
-      </div>
-      <div className="flex justify-center w-full">
-        <Portfolio portfolio={value} setPortfolio={mutate} />
-      </div>
-    </main>
+    <PortfolioProvider value={portfolio}>
+      <PriceProvider value={priceData}>
+        <main className="flex flex-col items-center w-screen h-screen">
+          <header className="flex items-center justify-center w-full py-8">
+            <Account user={user} />
+          </header>
+          <div className="flex-none w-full h-4 sm:h-10" />
+          <div className="flex items-center justify-center w-full px-4">
+            <Searchbox />
+          </div>
+          <div className="flex justify-center w-full">
+            <Portfolio />
+          </div>
+        </main>
+      </PriceProvider>
+    </PortfolioProvider>
   );
 };
 

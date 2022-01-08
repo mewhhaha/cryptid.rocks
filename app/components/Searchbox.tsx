@@ -9,6 +9,7 @@ import coinList from "~/data/coins.json";
 import cn from "classnames";
 import { Setter } from "~/types";
 import { CoinInfo, PortfolioCoin } from "portfolio-worker";
+import { usePortfolio } from "~/contexts/portfolio";
 
 type CoinListQuery = CoinInfo[];
 
@@ -91,11 +92,9 @@ const useCoinList = (query: string) => {
   return list;
 };
 
-type SearchboxProps = {
-  setPortfolio: Setter<PortfolioCoin[]>;
-};
+export const Searchbox: React.VFC = () => {
+  const { mutate } = usePortfolio();
 
-export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
   const combobox = useComboboxState();
   const coinList = useCoinList(combobox.value);
 
@@ -120,7 +119,7 @@ export const Searchbox: React.VFC<SearchboxProps> = ({ setPortfolio }) => {
               const active = coin.name === combobox.activeValue;
 
               const handleOnClick = () => {
-                setPortfolio((portfolio) => {
+                mutate((portfolio) => {
                   if (portfolio.find((x) => x.id === coin.id)) return portfolio;
                   return [...portfolio, { ...coin, quantity: 0 }];
                 });

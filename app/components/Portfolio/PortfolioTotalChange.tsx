@@ -1,7 +1,7 @@
 import React from "react";
 import { PortfolioCoin } from "portfolio-worker";
-import { useSimplePriceQuery } from "~/queries";
 import { PortfolioValueChange } from "./PortfolioValueChange";
+import { usePrice } from "~/contexts/price";
 
 type PortfolioTotalChangeProps = {
   portfolio: PortfolioCoin[];
@@ -10,25 +10,22 @@ type PortfolioTotalChangeProps = {
 export const PortfolioTotalChange: React.VFC<PortfolioTotalChangeProps> = ({
   portfolio: coins,
 }) => {
-  const { data } = useSimplePriceQuery(
-    coins.map((c) => c.id),
-    "sek"
-  );
+  const price = usePrice();
 
   const lookupQuantity: Record<string, number> = {};
   coins.forEach((c) => {
     lookupQuantity[c.id] = c.quantity;
   });
 
-  switch (data) {
+  switch (price) {
     case undefined:
       return <span className="w-full h-10 rounded-xl bg-gray animate-pulse" />;
     default: {
-      const total = Object.entries(data).reduce(
+      const total = Object.entries(price).reduce(
         (curr, [id, next]) => next.sek * lookupQuantity[id] + curr,
         0
       );
-      const yesterdayTotal = Object.entries(data).reduce(
+      const yesterdayTotal = Object.entries(price).reduce(
         (curr, [id, next]) =>
           next.sek *
             lookupQuantity[id] *

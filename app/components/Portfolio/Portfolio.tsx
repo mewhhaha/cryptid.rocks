@@ -81,7 +81,7 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
             {price ? (
               <PortfolioPrice price={price[id].sek} />
             ) : (
-              <span className="w-full rounded-xl bg-gray animate-pulse" />
+              <div className="invisible w-full h-full">?</div>
             )}
           </dd>
         </dl>
@@ -91,7 +91,7 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
             {price ? (
               <PortfolioValue total={price[id].sek * quantity} />
             ) : (
-              <span className="w-full rounded-xl bg-gray animate-pulse" />
+              <div className="invisible w-full h-full">?</div>
             )}
           </dd>
         </dl>
@@ -101,7 +101,7 @@ const PortfolioCoinEntry: React.VFC<PortfolioCoinEntryProps> = ({
             {price ? (
               <PortfolioValueChange change={price[id].sek_24h_change ?? 0} />
             ) : (
-              <span className="w-full rounded-xl bg-gray animate-pulse" />
+              <div className="invisible w-full h-full">?</div>
             )}
           </dd>
         </dl>

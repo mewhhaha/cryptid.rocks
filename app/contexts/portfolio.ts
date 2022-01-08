@@ -9,7 +9,7 @@ export const PortfolioProvider = Context.Provider
 export const usePortfolio = () => {
   const context = useContext(Context)
   if (context === undefined) {
-    throw new Error("Expected PriceProvider to wrap usePrice hook")
+    throw new Error("Expected PortfolioProvider to wrap usePortfolio hook")
   }
 
   return context;

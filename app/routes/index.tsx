@@ -17,6 +17,7 @@ import { fetchPortfolio } from "~/services/portfolio.server";
 import { PortfolioProvider } from "~/contexts/portfolio";
 import { PriceProvider } from "~/contexts/price";
 import { useSimplePriceQuery } from "~/queries";
+import { ProfileProvider } from "~/contexts/profile";
 
 type LoaderData = {
   user: Auth0Profile;
@@ -126,22 +127,24 @@ const Index: React.VFC = () => {
   );
 
   return (
-    <PortfolioProvider value={portfolio}>
-      <PriceProvider value={price}>
-        <main className="flex flex-col items-center w-screen h-screen">
-          <header className="flex items-center justify-center w-full py-8">
-            <Account user={user} />
-          </header>
-          <div className="flex-none w-full h-4 sm:h-10" />
-          <div className="flex items-center justify-center w-full px-4">
-            <Searchbox />
-          </div>
-          <div className="flex justify-center w-full">
-            <Portfolio />
-          </div>
-        </main>
-      </PriceProvider>
-    </PortfolioProvider>
+    <ProfileProvider value={user}>
+      <PortfolioProvider value={portfolio}>
+        <PriceProvider value={price}>
+          <main className="flex flex-col items-center w-screen h-screen">
+            <header className="flex items-center justify-center w-full py-8">
+              <Account />
+            </header>
+            <div className="flex-none w-full h-4 sm:h-10" />
+            <div className="flex items-center justify-center w-full px-4">
+              <Searchbox />
+            </div>
+            <div className="flex justify-center w-full">
+              <Portfolio />
+            </div>
+          </main>
+        </PriceProvider>
+      </PortfolioProvider>
+    </ProfileProvider>
   );
 };
 

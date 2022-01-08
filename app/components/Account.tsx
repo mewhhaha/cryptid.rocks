@@ -2,16 +2,13 @@ import React from "react";
 import { LogoutIcon } from "@heroicons/react/solid";
 import { Menu } from "@headlessui/react";
 import { DropdownMenu, DropdownMenuItem } from "./DropdownMenu";
-import { Auth0Profile } from "remix-auth-auth0";
 import { Form } from "remix";
 import cn from "classnames";
 import { usePortfolio } from "~/contexts/portfolio";
+import { useProfile } from "~/contexts/profile";
 
-type AccountProps = {
-  user: Auth0Profile;
-};
-
-export const Account: React.VFC<AccountProps> = ({ user }) => {
+export const Account: React.VFC = () => {
+  const profile = useProfile();
   const { status } = usePortfolio();
 
   return (
@@ -29,7 +26,7 @@ export const Account: React.VFC<AccountProps> = ({ user }) => {
               "focus-visible:outline-none focus-visible:ring focus-visible:ring-blue-500 hover:opacity-100"
             )}
           >
-            <img src={user.photos[0]?.value} alt="profile" />
+            <img src={profile.photos[0]?.value} alt="profile" />
           </Menu.Button>
         }
       >

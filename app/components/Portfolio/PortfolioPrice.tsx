@@ -1,5 +1,5 @@
 import React from "react";
-import { PortfolioCurrencyChip } from "./PortfolioCurrency";
+import { PortfolioCurrencyChip } from "./PortfolioCurrencyChip";
 
 type PortfolioPriceProps = {
   price: number;

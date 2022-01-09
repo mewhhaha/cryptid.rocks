@@ -16,7 +16,14 @@ export const meta: MetaFunction = () => {
 };
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
+  return [
+    { rel: "stylesheet", href: styles },
+    {
+      rel: "manifest",
+      href: "/site.webmanifest",
+      crossOrigin: "use-credentials",
+    },
+  ];
 };
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {

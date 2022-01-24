@@ -1,6 +1,15 @@
 import { FingerPrintIcon } from "@heroicons/react/solid";
-import { Form, useTransition } from "remix";
+import { Form, LoaderFunction, useTransition } from "remix";
 import cn from "classnames";
+import { isAuthenticated } from "~/services/auth.server";
+
+export const loader: LoaderFunction = async ({ context }) => {
+  await isAuthenticated(context, {
+    successRedirect: "/",
+  });
+
+  return null;
+};
 
 const Login: React.FC = () => {
   const transition = useTransition();

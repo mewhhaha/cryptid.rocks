@@ -1,9 +1,9 @@
-import { auth } from "~/services/auth.server";
+import { isAuthenticated } from "~/services/auth.server";
 import { fetchPortfolio } from "~/services/portfolio.server";
 import { LoaderFunction } from "~/types";
 
-export const loader: LoaderFunction = async ({ request, context }) => {
-  const user = await auth(context).isAuthenticated(request, {
+export const loader: LoaderFunction = async ({ context }) => {
+  const user = await isAuthenticated(context, {
     failureRedirect: "/login",
   });
 

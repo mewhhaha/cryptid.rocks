@@ -9,7 +9,6 @@ import React, {
 import { Portfolio } from "~/components/Portfolio";
 import { Searchbox } from "~/components/Searchbox";
 import { Account } from "~/components/Account";
-import { auth } from "~/services/auth.server";
 import { Auth0Profile } from "remix-auth-auth0";
 import { isPortfolioCoins, PortfolioCoin } from "portfolio-worker";
 import { LoaderFunction } from "~/types";
@@ -18,6 +17,7 @@ import { PortfolioProvider } from "~/contexts/portfolio";
 import { PriceProvider } from "~/contexts/price";
 import { useSimplePriceQuery } from "~/queries";
 import { ProfileProvider } from "~/contexts/profile";
+import { isAuthenticated } from "~/services/auth.server";
 
 type LoaderData = {
   user: Auth0Profile;
@@ -25,10 +25,9 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({
-  request,
   context,
 }): Promise<LoaderData> => {
-  const user = await auth(context).isAuthenticated(request, {
+  const user = await isAuthenticated(context, {
     failureRedirect: "/login",
   });
 

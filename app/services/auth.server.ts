@@ -1,10 +1,10 @@
-import { Authenticator } from "remix-auth";
+import { AuthenticateOptions, Authenticator } from "remix-auth";
 import { Auth0Profile, Auth0Strategy } from "remix-auth-auth0";
-import { createCookie, createCloudflareKVSessionStorage } from "remix";
+import { createCookie, createCookieSessionStorage } from "remix";
 import { WorkerContext } from "~/types";
 
 
-export const auth = ({ env, request }: WorkerContext) => {
+const auth = ({ env, request }: WorkerContext) => {
   const sessionCookie = createCookie("_session", {
     sameSite: "lax", // this helps with CSRF
     path: "/", // remember to add this so the cookie will work in all routes
@@ -13,8 +13,7 @@ export const auth = ({ env, request }: WorkerContext) => {
     secure: process.env.NODE_ENV === "production", // enable this in prod only
   });
 
-  const sessionStorage = createCloudflareKVSessionStorage({
-    kv: env.AUTH0_KV,
+  const sessionStorage = createCookieSessionStorage({
     cookie: sessionCookie,
   });
 
@@ -36,3 +35,38 @@ export const auth = ({ env, request }: WorkerContext) => {
 
   return authenticator;
 };
+
+export function isAuthenticated
+  (context: WorkerContext, options?: {
+    successRedirect?: undefined;
+    failureRedirect?: undefined;
+  }): Promise<Auth0Profile | null>;
+export function isAuthenticated
+  (context: WorkerContext, options: {
+    successRedirect: string;
+    failureRedirect?: undefined;
+  }): Promise<null>;
+export function isAuthenticated
+  (context: WorkerContext, options: {
+    successRedirect?: undefined;
+    failureRedirect: string;
+  }): Promise<Auth0Profile>;
+
+
+export function isAuthenticated(context: WorkerContext, options?: {
+  successRedirect?: string;
+  failureRedirect?: string;
+} | undefined): Promise<Auth0Profile | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return auth(context).isAuthenticated(context.request, options as any);
+}
+
+export const authenticate = (context: WorkerContext, options?: Pick<AuthenticateOptions, "successRedirect" | "failureRedirect" | "throwOnError" | "context"> | undefined) => {
+  return auth(context).authenticate("auth0", context.request, options)
+}
+
+export const logout = (context: WorkerContext, options: {
+  redirectTo: string;
+}) => {
+  return auth(context).logout(context.request, options)
+}

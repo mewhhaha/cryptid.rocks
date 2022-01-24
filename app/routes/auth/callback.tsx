@@ -1,8 +1,8 @@
-import { auth } from "~/services/auth.server";
+import { authenticate } from "~/services/auth.server";
 import { LoaderFunction } from "~/types";
 
-export const loader: LoaderFunction = async ({ request, context }) => {
-  await auth(context).authenticate("auth0", request, {
+export const loader: LoaderFunction = async ({ context }) => {
+  await authenticate(context, {
     successRedirect: "/",
     failureRedirect: "/login",
   });

@@ -1,8 +1,8 @@
-import { auth } from "~/services/auth.server";
+import { authenticate } from "~/services/auth.server";
 import { ActionFunction } from "~/types";
 
-export const action: ActionFunction = async ({ request, context }) => {
-  await auth(context).authenticate("auth0", request, {
+export const action: ActionFunction = async ({ context }) => {
+  await authenticate(context, {
     successRedirect: "/",
     failureRedirect: "/login",
   });

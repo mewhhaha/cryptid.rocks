@@ -19,6 +19,7 @@ const auth = ({ env, request }: WorkerContext) => {
 
   const authenticator = new Authenticator<Auth0Profile>(sessionStorage);
 
+
   const auth0Strategy = new Auth0Strategy(
     {
       callbackURL: new URL(request.url).origin + env.AUTH0_CALLBACK_URL,
@@ -65,8 +66,9 @@ export const authenticate = (context: WorkerContext, options?: Pick<Authenticate
   return auth(context).authenticate("auth0", context.request, options)
 }
 
-export const logout = (context: WorkerContext, options: {
+export const logout = async (context: WorkerContext, options: {
   redirectTo: string;
 }) => {
-  return auth(context).logout(context.request, options)
+  await fetch(`${context.env.AUTH0_DOMAIN}/v2/logout?client_id=${context.env.AUTH0_CLIENT_ID}`)
+  await auth(context).logout(context.request, options)
 }

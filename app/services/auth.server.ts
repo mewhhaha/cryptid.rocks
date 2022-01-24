@@ -69,6 +69,6 @@ export const authenticate = (context: WorkerContext, options?: Pick<Authenticate
 export const logout = async (context: WorkerContext, options: {
   redirectTo: string;
 }) => {
-  await fetch(`${context.env.AUTH0_DOMAIN}/v2/logout?client_id=${context.env.AUTH0_CLIENT_ID}`)
+  // await fetch(`${context.env.AUTH0_DOMAIN}/v2/logout?client_id=${context.env.AUTH0_CLIENT_ID}`)
   await auth(context).logout(context.request, options)
 }

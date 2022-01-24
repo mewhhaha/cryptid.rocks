@@ -5,6 +5,6 @@ export const action: ActionFunction = async ({ context }) => {
   await logout(context, {
     redirectTo: `https://${context.env.AUTH0_DOMAIN}/v2/logout?client_id=${
       context.env.AUTH0_CLIENT_ID
-    }&callback_url=${new URL(context.request.url).origin}/login`,
+    }&callback_url=${new URL(context.request.url).origin}`,
   });
 };

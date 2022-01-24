@@ -20,4 +20,6 @@ export interface LoaderFunction {
   (param: Omit<DataFunctionArgs, 'context'> & { context: WorkerContext }): ReturnType<LF>;
 }
 
-export type ActionFunction = AF
+export interface ActionFunction {
+  (param: Omit<DataFunctionArgs, 'context'> & { context: WorkerContext }): ReturnType<AF>;
+}

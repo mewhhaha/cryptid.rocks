@@ -1,6 +1,6 @@
 import React from "react";
 import cn from "classnames";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "portfolio-do";
 import { PortfolioTotalChange } from "./PortfolioTotalChange";
 import { PortfolioTotalValue } from "./PortfolioTotalValue";
 import { PortfolioValueChange } from "./PortfolioValueChange";

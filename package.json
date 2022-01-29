@@ -59,7 +59,7 @@
     "node": ">=14"
   },
   "workspaces": [
-    "./workers/*"
+    "./durable_objects/*"
   ],
   "sideEffects": false
 }

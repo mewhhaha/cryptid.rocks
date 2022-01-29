@@ -1,5 +1,5 @@
 import React from "react";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "portfolio-do";
 import { PortfolioValueChange } from "./PortfolioValueChange";
 import { usePrice } from "~/contexts/price";
 

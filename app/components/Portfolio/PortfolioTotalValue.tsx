@@ -1,6 +1,6 @@
 import React from "react";
 import { PortfolioValue } from "./PortfolioValue";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "portfolio-do";
 import { usePrice } from "~/contexts/price";
 
 type PortfolioTotalValueProps = {

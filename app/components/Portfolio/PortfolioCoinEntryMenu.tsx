@@ -6,7 +6,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/solid";
 import cn from "classnames";
-import { PortfolioCoin } from "portfolio-worker";
+import { PortfolioCoin } from "portfolio-do";
 import { DropdownMenu, DropdownMenuItem } from "../DropdownMenu";
 
 type PortfolioCoinEntryMenuProps = {

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { PortfolioCoin } from "workers/portfolio/portfolio";
+import { PortfolioCoin } from "durable_objects/portfolio/portfolio";
 import { Setter } from "~/types";
 
 const Context = createContext<{ data: PortfolioCoin[], mutate: Setter<PortfolioCoin[]>, status: 'open' | 'closed' } | undefined>(undefined)

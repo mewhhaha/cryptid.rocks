@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "../build";
 
 const handleRequest = createPagesFunctionHandler({
-  build: build as any,
+  build,
   getLoadContext: (context) => context,
 });
 
-export function onRequest(context: EventContext<any, any, any>) {
+export function onRequest(context) {
   return handleRequest(context);
 }

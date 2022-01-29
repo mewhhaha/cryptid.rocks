@@ -1,3 +1,10 @@
+
+export default {
+  async fetch() {
+    return new Response(null, { status: 404 })
+  }
+}
+
 export type CoinInfo = {
   id: string
   symbol: string

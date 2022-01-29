@@ -1,0 +1,17 @@
+compatibility_date = "2022-01-06"
+name = "portfolio"
+type = "javascript"
+
+workers_dev = true
+
+[durable_objects]
+bindings = [
+  {name = "PORTFOLIO", class_name = "Portfolio"},
+]
+
+[build]
+command = "npm run build"
+
+[build.upload]
+format = "modules"
+main = "dist/index.mjs"

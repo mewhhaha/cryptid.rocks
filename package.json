@@ -4,8 +4,7 @@
   "description": "",
   "license": "",
   "scripts": {
-    "build": "npm run build:packages && npm run build:css && npm run build:remix",
-    "build:packages": "npm run build --workspace workers",
+    "build": "npm run build:css && npm run build:remix",
     "build:remix": "cross-env NODE_ENV=production remix build",
     "build:css": "tailwindcss -o ./app/tailwind.css --minify",
     "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:remix\" \"npm run dev:wrangler\" \"npm run dev:css\"",
@@ -60,6 +59,5 @@
   "engines": {
     "node": ">=14"
   },
-  "sideEffects": false,
-  "main": "dist/worker.js"
+  "sideEffects": false
 }

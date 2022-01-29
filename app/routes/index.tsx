@@ -13,7 +13,7 @@ import { Auth0Profile } from "remix-auth-auth0";
 import {
   isPortfolioCoins,
   PortfolioCoin,
-} from "~/../durable_objects/portfolio";
+} from "functions/durable_objects/portfolio";
 import { LoaderFunction } from "~/types";
 import { fetchPortfolio } from "~/services/portfolio.server";
 import { PortfolioProvider } from "~/contexts/portfolio";

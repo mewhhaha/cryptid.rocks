@@ -153,7 +153,7 @@ const AmountTitle = ({ text }: AmountTitleProps) => {
   const characters = text.split("");
 
   return (
-    <span className="relative z-10 text-center text-6xl font-bold sm:text-7xl lg:text-9xl">
+    <span className="relative z-10 rounded-xl bg-black/10 px-4 text-center text-6xl font-bold backdrop-blur-[1px] sm:text-7xl lg:text-9xl">
       {characters.map((d, i) => {
         if (isDigit(d)) {
           return <DigitAppear key={i} digit={d} />;
@@ -180,7 +180,7 @@ type SelectVsProps = {
 const SelectVs = ({ onChange, value }: SelectVsProps) => {
   return (
     <select
-      className="rounded-md bg-white/90 px-2 font-bold text-black"
+      className="rounded-md bg-white/30 px-2 font-bold text-white"
       value={value}
       onChange={(event) => {
         const value = event.currentTarget.value;
@@ -191,7 +191,7 @@ const SelectVs = ({ onChange, value }: SelectVsProps) => {
     >
       {validVs.map((v) => {
         return (
-          <option key={v} value={v}>
+          <option key={v} value={v} className="text-black">
             {v.toUpperCase()}
           </option>
         );

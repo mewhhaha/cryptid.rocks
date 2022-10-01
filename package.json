@@ -1,66 +1,17 @@
 {
-  "private": true,
-  "name": "monorepo",
+  "name": "1project.page",
+  "version": "1.0.0",
   "description": "",
-  "license": "",
+  "main": "index.js",
   "scripts": {
-    "build": "npm run build:do && npm run build:css && npm run build:remix",
-    "build:remix": "cross-env NODE_ENV=production remix build",
-    "build:do": "npm run build -w durable_objects",
-    "build:css": "tailwindcss -o ./app/tailwind.css --minify",
-    "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:remix\" \"npm run dev:wrangler\" \"npm run dev:css\"",
-    "postinstall": "remix setup cloudflare-pages",
-    "dev:remix": "remix watch",
-    "dev:css": "tailwindcss -o ./app/tailwind.css --watch",
-    "dev:wrangler": "wrangler pages dev ./public --watch ./build --kv AUTH0_KV",
-    "start": "npm run dev:wrangler"
+    "dev": "pnpm --filter web dev",
+    "build": "turbo run build --no-daemon",
+    "upload": "turbo run upload --no-daemon"
   },
-  "dependencies": {
-    "@headlessui/react": "^1.4.2",
-    "@heroicons/react": "^1.0.5",
-    "@remix-run/cloudflare-pages": "^1.1.1",
-    "@remix-run/react": "^1.1.1",
-    "@remix-run/server-runtime": "^1.1.1",
-    "ariakit": "^2.0.0-alpha.14",
-    "classnames": "^2.3.1",
-    "dotenv": "^10.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-router-dom": "^6.2.1",
-    "remix": "^1.1.1",
-    "remix-auth": "^3.2.1",
-    "remix-auth-auth0": "^1.1.0",
-    "swr": "^1.1.2",
-    "yup": "^0.32.11"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "@cloudflare/workers-types": "^3.2.0",
-    "@remix-run/dev": "^1.1.1",
-    "@types/react": "^17.0.24",
-    "@types/react-dom": "^17.0.9",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
-    "autoprefixer": "^10.4.1",
-    "concurrently": "^7.0.0",
-    "cron-schedule": "^3.0.4",
-    "cross-env": "^7.0.3",
-    "esbuild": "0.13.14",
-    "eslint": "^8.3.0",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.27.1",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "portfolio-do": "file:durable_objects/portfolio",
-    "postcss": "^8.4.5",
-    "prettier": "^2.4.1",
-    "tailwindcss": "^3.0.11",
-    "typescript": "^4.5.2",
-    "wrangler": "^0.0.7"
-  },
-  "engines": {
-    "node": ">=14"
-  },
-  "workspaces": [
-    "./durable_objects/*"
-  ],
-  "sideEffects": false
+    "turbo": "^1.5.5"
+  }
 }

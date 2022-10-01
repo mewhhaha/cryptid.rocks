@@ -10,4 +10,10 @@ dist
 
 .mf
 
-/wrangler.toml
+
+functions/*
+!functions/_middleware.ts
+
+.dev.vars
+.wrangler
+.turbo

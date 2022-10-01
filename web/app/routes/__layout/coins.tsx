@@ -1,46 +1,11 @@
-import { LoaderFunction } from "@remix-run/cloudflare";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { call, client } from "ditty";
-import type { SerializedPoint } from "portfolio";
+import { Outlet, useOutletContext } from "@remix-run/react";
 import Coingecko from "../../images/coingecko.svg";
-
-type LoaderData = { portfolio: SerializedPoint };
-
-const mockedList = [
-  { id: "polkadot", name: "Polkadot", symbol: "dot", amount: 845 },
-  { id: "nano", name: "Nano", symbol: "xno", amount: 4776 },
-  { id: "ethereum", name: "Ethereum", symbol: "eth", amount: 1.7114 },
-  { id: "moonbeam", name: "Moonbeam", symbol: "glmr", amount: 201.1747 },
-  { id: "matic-network", name: "Polygon", symbol: "matic", amount: 13173 },
-  { id: "adex", name: "Ambire AdEx", symbol: "adx", amount: 15870 },
-];
-
-export const loader: LoaderFunction = async ({
-  request,
-  context,
-}): Promise<LoaderData> => {
-  if (process.env.NODE_ENV !== "production") {
-    const now = new Date().toISOString();
-
-    return {
-      portfolio: {
-        updatedAt: now,
-        list: mockedList.map((p) => ({ ...p, updatedAt: now })),
-      },
-    };
-  }
-
-  const sub = context.JWT.payload.sub;
-  const p = client(request, context.PORTFOLIO_DO, sub);
-  const portfolio = await call(p, "latest");
-
-  return { portfolio };
-};
+import { OutletData } from "../__layout";
 
 export default function Page() {
   const {
     portfolio: { list },
-  } = useLoaderData<LoaderData>();
+  } = useOutletContext<OutletData>();
 
   return (
     <div className="flex flex-col justify-center p-4">
@@ -50,9 +15,7 @@ export default function Page() {
         <img src={Coingecko} alt="coingecko" className="mr-1 ml-2 h-8 w-8" />{" "}
         Coingecko
       </div>
-      <button>
-        <Link to="/coins/new">add coin</Link>
-      </button>
+
       <ul className="space-y-4">
         {list.map((c) => {
           return (

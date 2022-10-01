@@ -6,11 +6,11 @@
   "scripts": {
     "postinstall": "remix setup cloudflare",
     "upload": "wrangler pages publish ./public --project-name cryptid",
-    "build": "run-s build:css build:remix",
+    "build": "NODE_ENV=production run-s build:css build:remix",
     "build:css": "tailwindcss -m -o app/tailwind.css",
     "build:remix": "remix build",
     "dev:remix": "remix watch",
-    "dev:wrangler": "wrangler pages dev ./public --kv COINS_KV --persist",
+    "dev:wrangler": "wrangler pages dev ./public --kv COINS_KV --persist --kv AMOUNT_KV --persist",
     "dev": "pnpm build:remix && run-p \"dev:*\""
   },
   "keywords": [],

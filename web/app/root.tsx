@@ -12,7 +12,7 @@ import styles from "./tailwind.css";
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
-    { rel: "stylesheet", href: styles },
+
     {
       rel: "apple-touch-icon",
       sizes: "180x180",
@@ -49,6 +49,11 @@ export default function App() {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
+        {process.env.NODE_ENV === "production" ? (
+          <link rel="stylesheet" href={styles} />
+        ) : (
+          <script src="https://cdn.tailwindcss.com" />
+        )}
       </head>
       <body className="bg-black">
         <Outlet />

@@ -1,6 +1,7 @@
 import { Link, Outlet } from "@remix-run/react";
 import { cx } from "app/helpers/cx";
 import { useAppear } from "app/hooks";
+import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import Splash from "../images/splash.png";
 
 const backgroundImage = { backgroundImage: `url("${Splash}")` };
@@ -32,8 +33,12 @@ export default function Page() {
         style={backgroundImage}
       >
         <h1 className="text-3xl font-bold">🍌Cryptid</h1>
+
         <Link to="/auth/logout">
-          <div className="h-8 w-8 rounded-full bg-black ring" />
+          <span>
+            <ArrowLeftOnRectangleIcon />
+            Logout
+          </span>
         </Link>
       </header>
       <main className="flex-grow bg-slate-600">

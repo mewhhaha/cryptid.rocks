@@ -10,9 +10,8 @@
     "build:css": "tailwindcss -m -o app/tailwind.css",
     "build:remix": "remix build",
     "dev:remix": "remix watch",
-    "dev:css": "tailwindcss -w -o app/tailwind.css",
     "dev:wrangler": "wrangler pages dev ./public --kv COINS_KV --persist",
-    "dev": "remix build && run-p \"dev:*\""
+    "dev": "pnpm build:remix && run-p \"dev:*\""
   },
   "keywords": [],
   "author": "",
@@ -20,7 +19,6 @@
   "devDependencies": {
     "@cloudflare/pages-plugin-cloudflare-access": "^1.0.1",
     "@cloudflare/workers-types": "^3.16.0",
-    "@headlessui/react": "^1.7.3",
     "@remix-run/cloudflare": "^1.7.2",
     "@remix-run/cloudflare-pages": "^1.7.2",
     "@remix-run/dev": "^1.7.2",
@@ -45,6 +43,7 @@
     "wrangler": "^2.1.9"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

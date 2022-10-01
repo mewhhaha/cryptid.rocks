@@ -4,6 +4,5 @@
 module.exports = {
   serverBuildTarget: "cloudflare-pages",
   server: "./server.js",
-  devServerBroadcastDelay: 2000,
   ignoredRouteFiles: ["**/.*"],
 };

@@ -43,7 +43,7 @@ export const meta: MetaFunction = () => {
 
 export default function App() {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -55,7 +55,7 @@ export default function App() {
           <script src="https://cdn.tailwindcss.com" />
         )}
       </head>
-      <body className="bg-black">
+      <body className="flex h-full flex-col bg-black text-white">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

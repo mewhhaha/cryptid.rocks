@@ -12,11 +12,13 @@ import S450 from "../images/splash_450.jpg";
 import S225 from "../images/splash_225.jpg";
 import { Amount } from "app/types";
 import { LoaderFunction } from "@remix-run/cloudflare";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SerializedPoint } from "portfolio";
 import { isVs, validVs, Vs } from "../data/vs";
 import { call, client } from "ditty";
 import { makeAmountFormData } from "./api/amount";
+import Coingecko from "../images/coingecko.svg";
+import { formatAmount } from "app/helpers";
 
 type Rates<T extends Vs> = {
   vs: T;
@@ -28,7 +30,11 @@ type LoaderData = {
   amount: Amount;
 };
 
-export type OutletData = LoaderData;
+export type OutletData<T extends Vs> = {
+  portfolio: SerializedPoint;
+  amount: Amount;
+  rates: Rates<T> | undefined;
+};
 
 const mockedList = [
   { id: "polkadot", name: "Polkadot", symbol: "dot", amount: 845 },
@@ -74,8 +80,7 @@ export const loader: LoaderFunction = async ({
 };
 
 export default function Page() {
-  const data = useLoaderData<LoaderData>();
-  const { amount: defaultAmount, portfolio } = data;
+  const { amount: defaultAmount, portfolio } = useLoaderData<LoaderData>();
 
   const [amount, setAmount] = useState(defaultAmount);
   const [vs, setVs] = useState(amount.vs);
@@ -113,8 +118,8 @@ export default function Page() {
   const formattedAmount = formatAmount(amount.value, amount.vs);
 
   return (
-    <section className="flex flex-col text-white">
-      <div className="sticky -top-[20.5rem] flex h-96 w-full items-center justify-center overflow-hidden">
+    <>
+      <div className="sticky -top-[20.5rem] z-10 flex h-96 w-full flex-none items-center justify-center overflow-hidden">
         <img
           srcSet={`${S225} 225w, ${S450} 450w, ${S900} 900w, ${S1800} 1800w, ${S3600} 3600w`}
           src={S225}
@@ -123,7 +128,7 @@ export default function Page() {
         />
         <AmountTitle key={formattedAmount} text={formattedAmount} />
       </div>
-      <header className="from to sticky top-0 left-0 right-0 -mt-14 flex h-14 items-end justify-between bg-transparent px-4 py-2 text-white shadow-md backdrop-blur-sm">
+      <header className="sticky top-0 left-0 right-0 z-10 -mt-14 flex h-14 flex-none items-end justify-between bg-transparent px-4 py-2 text-white shadow-md backdrop-blur-sm">
         <h1 className="text-3xl">
           🍌<span className="font-bold">Cryptid</span>{" "}
           <span className="hidden text-gray-200 sm:inline">portfolio</span>
@@ -139,10 +144,36 @@ export default function Page() {
           </HeaderNav>
         </div>
       </header>
-      <main className="flex-grow bg-slate-600">
-        <Outlet context={data} />
+      <main className="relative flex-grow">
+        <Outlet
+          context={useMemo(
+            () => ({ amount, portfolio, rates }),
+            [amount, portfolio, rates]
+          )}
+        />
       </main>
-    </section>
+
+      <footer className="bg-slate-800">
+        <div className="mx-auto max-w-7xl py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
+          <div className="flex justify-center space-x-6 md:order-2">
+            <div className="flex items-center">
+              Powered by{" "}
+              <img
+                src={Coingecko}
+                alt="coingecko"
+                className="mr-1 ml-2 h-8 w-8"
+              />{" "}
+              Coingecko
+            </div>
+          </div>
+          <div className="mt-8 md:order-1 md:mt-0">
+            <p className="text-center text-base text-gray-400">
+              &copy; 2020 Jacob Torrång. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }
 
@@ -324,15 +355,6 @@ const useRates = <T extends Vs>(vs: T, portfolio: SerializedPoint) => {
   }, [portfolio, vs]);
 
   return rates;
-};
-
-const formatAmount = (n: number, vs: Vs) => {
-  const formatter = new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: vs,
-    minimumFractionDigits: 0,
-  });
-  return formatter.format(Math.floor(n));
 };
 
 const sumTotal = <T extends Vs>(

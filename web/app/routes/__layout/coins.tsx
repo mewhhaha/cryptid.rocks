@@ -11,7 +11,7 @@ export default function CoinOptions<T extends Vs>() {
   const { prices, portfolio } = useOutletContext<OutletData<T>>();
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center p-4">
+    <div className="relative flex flex-grow flex-col items-center justify-center p-4">
       <Outlet />
 
       <PointStarsBackground className="pointer-events-none absolute inset-0" />

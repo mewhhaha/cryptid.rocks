@@ -102,7 +102,9 @@ const Tooltip: PointTooltip = ({ point }) => {
           {point.serieId}
         </ChartColorLabel>
       </div>
-      <div className="text-xl sm:text-2xl">{formatAmount(point.x, vs)}</div>
+      <div className="text-xl sm:text-2xl">
+        {formatAmount(Number.parseFloat(point.data.y.toString()), vs, 2)}
+      </div>
     </ChartTooltip>
   );
 };

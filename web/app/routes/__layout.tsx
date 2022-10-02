@@ -112,7 +112,7 @@ export default function Page<T extends Vs>() {
           </HeaderNav>
         </div>
       </header>
-      <main className="relative flex-grow">
+      <main className="relative flex flex-grow flex-col">
         <Outlet
           context={useMemo(
             (): OutletData<T> => ({ amount, portfolio, prices }),

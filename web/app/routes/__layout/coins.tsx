@@ -1,15 +1,13 @@
 import { CurrencyYenIcon, PlusCircleIcon } from "@heroicons/react/24/solid";
 import { Link, Outlet, useOutletContext } from "@remix-run/react";
+import { ChartPortfolio, ChartPriceHistory } from "app/components";
 import { PointStarsBackground } from "app/components/PointStarsSvg";
-import { Vs } from "app/data/vs";
-import { cx, formatAmount } from "app/helpers";
+import { cx, formatAmount, formatPercentage, getPrice } from "app/helpers";
+import { Vs } from "app/types";
 import { OutletData } from "../__layout";
 
 export default function Page<T extends Vs>() {
-  const {
-    rates,
-    portfolio: { list },
-  } = useOutletContext<OutletData<T>>();
+  const { prices, portfolio } = useOutletContext<OutletData<T>>();
 
   return (
     <div className="relative flex h-full w-full flex-col items-center justify-center p-4">
@@ -22,44 +20,96 @@ export default function Page<T extends Vs>() {
         )}
       />
 
-      {list.length === 0 ? (
+      {portfolio.list.length === 0 ? (
         <EmptyState />
       ) : (
-        <ul className="relative w-full space-y-4">
-          {list.map((c) => {
-            const rate = rates?.coins[c.id][rates.vs];
-            return (
-              <li
-                key={c.id}
-                className="flex w-full flex-wrap rounded-md border p-4"
-              >
-                <div className="flex w-96 items-center">
-                  <h1 className="text-6xl font-bold">{c.name}</h1>
-                </div>
-                <dl className="grid grid-rows-2 gap-4">
-                  <dt className="text-gray-400">Last updated</dt>
-                  <dd>{formatter.format(new Date(c.updatedAt))}</dd>
-                  <dt className="text-gray-400">Symbol</dt>
-                  <dd>{c.symbol}</dd>
-                </dl>
-                <dl className="grid grid-rows-2 gap-4">
-                  <dt className="text-gray-400">Amount</dt>
-                  <dd>{c.amount}</dd>
-                  <dt className="text-gray-400">Per</dt>
-                  <dd>{rate ? formatAmount(rate, rates.vs) : "loading"}</dd>
-                  <dt className="text-gray-400">Value</dt>
-                  <dd>
-                    {rate ? formatAmount(c.amount * rate, rates.vs) : "loading"}
-                  </dd>
-                </dl>
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          {Object.keys(prices.coins).length > 0 && (
+            <div className="relative h-96 w-full max-w-4xl rounded-md bg-black/70">
+              <span className="hidden sm:inline">
+                <ChartPortfolio
+                  prices={prices}
+                  portfolio={portfolio}
+                  direction="horizontal"
+                />
+              </span>
+              <span className="sm:hidden">
+                <ChartPortfolio
+                  prices={prices}
+                  portfolio={portfolio}
+                  direction="vertical"
+                />
+              </span>
+            </div>
+          )}
+
+          <ul className="relative mb-12 w-full max-w-4xl space-y-10">
+            {portfolio.list.map((c) => {
+              const { value, change24h } = getPrice(prices, c.id);
+
+              return (
+                <li key={c.id}>
+                  <section>
+                    <h1 className="mb-4 text-6xl font-bold">
+                      {c.name}{" "}
+                      <span
+                        className={cx(
+                          "block whitespace-nowrap text-base sm:inline",
+                          change24h > 0 ? "text-green-600" : "text-red-600"
+                        )}
+                      >
+                        {`24h ${formatPercentage(change24h / 100, true)}`}
+                      </span>
+                    </h1>
+
+                    <div className="rounded-md bg-black shadow-md">
+                      <div className="rounded-md border bg-gradient-to-r from-blue-600/50 via-orange-600/10 to-transparent p-4 text-2xl">
+                        Your{" "}
+                        <Tag className="text-green-300">
+                          {c.amount} {c.symbol}
+                        </Tag>{" "}
+                        is valued at{" "}
+                        <Tag className="text-blue-300">
+                          {formatAmount(value, prices.vs, 2)}
+                        </Tag>
+                        . The total value comes out to{" "}
+                        <Tag className="text-red-300">
+                          {formatAmount(c.amount * value, prices.vs)}
+                        </Tag>
+                        .
+                        <div className="h-96 w-full">
+                          <ChartPriceHistory coin={c} vs={prices.vs} />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       )}
     </div>
   );
 }
+
+type TagProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const Tag = ({ children, className }: TagProps) => {
+  return (
+    <span
+      className={cx(
+        "rounded-md border bg-black px-1 text-xl font-bold",
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
+};
 
 const EmptyState = () => {
   return (
@@ -89,9 +139,3 @@ const EmptyState = () => {
     </div>
   );
 };
-
-const formatter = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "long",
-  year: "numeric",
-});

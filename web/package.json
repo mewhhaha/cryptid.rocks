@@ -10,7 +10,7 @@
     "build:css": "tailwindcss -m -o app/tailwind.css",
     "build:remix": "remix build",
     "dev:remix": "remix watch",
-    "dev:wrangler": "wrangler pages dev ./public --kv COINS_KV --persist --kv AMOUNT_KV --persist",
+    "dev:wrangler": "wrangler pages dev ./public --kv COINS_KV --persist --kv PRICES_KV --persist",
     "dev": "pnpm build:remix && run-p \"dev:*\""
   },
   "keywords": [],
@@ -45,6 +45,11 @@
   "dependencies": {
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.11",
+    "@nivo/core": "^0.80.0",
+    "@nivo/line": "^0.80.0",
+    "@nivo/sankey": "^0.80.0",
+    "@nivo/tooltip": "^0.80.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^1.6.1"

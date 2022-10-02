@@ -1,5 +1,5 @@
-import { Link, Outlet, useLoaderData, useSubmit } from "@remix-run/react";
-import { cx } from "app/helpers/cx";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { cx, sumTotal, withAbort, formatAmount } from "app/helpers";
 import { useAppear } from "app/hooks";
 import {
   ArrowLeftOnRectangleIcon,
@@ -10,30 +10,23 @@ import S1800 from "../images/splash_1800.jpg";
 import S900 from "../images/splash_900.jpg";
 import S450 from "../images/splash_450.jpg";
 import S225 from "../images/splash_225.jpg";
-import { Amount } from "app/types";
+import { Amount, isVs, Prices, validVs, Vs } from "app/types";
 import { LoaderFunction } from "@remix-run/cloudflare";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { SerializedPoint } from "portfolio";
-import { isVs, validVs, Vs } from "../data/vs";
 import { call, client } from "ditty";
-import { makeAmountFormData } from "./api/amount";
 import Coingecko from "../images/coingecko.svg";
-import { formatAmount } from "app/helpers";
-
-type Rates<T extends Vs> = {
-  vs: T;
-  coins: Record<string, { [key in T]: number }>;
-};
 
 type LoaderData = {
   portfolio: SerializedPoint;
   amount: Amount;
+  prices: Prices<Vs>;
 };
 
 export type OutletData<T extends Vs> = {
   portfolio: SerializedPoint;
   amount: Amount;
-  rates: Rates<T> | undefined;
+  prices: Prices<T>;
 };
 
 const mockedList = [
@@ -49,71 +42,70 @@ export const loader: LoaderFunction = async ({
   request,
   context,
 }): Promise<LoaderData> => {
+  const sub = context.JWT.payload.sub;
+  const cachedPrices = await context.PRICES_KV.get<Prices<Vs>>(
+    `${sub}-latest`,
+    "json"
+  );
+  const defaultPrices: Prices<Vs> = { coins: {}, vs: "usd" };
+  const prices = cachedPrices ?? defaultPrices;
+
   if (process.env.NODE_ENV !== "production") {
     const now = new Date().toISOString();
+    const mockPortfolio = {
+      updatedAt: now,
+      list: mockedList.map((p) => ({ ...p, updatedAt: now })),
+    };
     return {
       portfolio: {
         updatedAt: now,
         list: mockedList.map((p) => ({ ...p, updatedAt: now })),
       },
-      amount: {
-        value: 70000,
-        vs: "usd",
-        updatedAt: now,
-      },
+      amount: { value: sumTotal(prices, mockPortfolio), vs: prices.vs },
+      prices,
     };
   }
-  const sub = context.JWT.payload.sub;
   const p = client(request, context.PORTFOLIO_DO, sub);
   const portfolio = await call(p, "latest");
 
-  const amount = await context.AMOUNT_KV.get<Amount>(`${sub}-latest`, "json");
+  const amount = { value: sumTotal(prices, portfolio), vs: prices.vs };
 
-  if (amount === null) {
-    return {
-      portfolio,
-      amount: { value: 0, vs: "usd", updatedAt: new Date().toISOString() },
-    };
-  }
-
-  return { amount, portfolio };
+  return { amount, portfolio, prices };
 };
 
-export default function Page() {
-  const { amount: defaultAmount, portfolio } = useLoaderData<LoaderData>();
+export default function Page<T extends Vs>() {
+  const {
+    amount: defaultAmount,
+    portfolio,
+    prices: defaultPrices,
+  } = useLoaderData<LoaderData>();
 
   const [amount, setAmount] = useState(defaultAmount);
-  const [vs, setVs] = useState(amount.vs);
+  const [vs, setVs] = useState(defaultPrices.vs);
 
-  const rates = useRates(vs, portfolio);
-  const submit = useSubmit();
+  const prices = usePrices<T>(vs as T, portfolio, defaultPrices as Prices<T>);
 
   useEffect(() => {
-    if (rates === undefined) return;
+    if (prices === undefined) return;
     const amount = {
-      value: sumTotal(rates, portfolio),
-      vs: rates?.vs,
+      value: sumTotal(prices, portfolio),
+      vs: prices?.vs,
       updatedAt: new Date().toISOString(),
     };
     setAmount(amount);
-    const formData = makeAmountFormData(amount);
+  }, [portfolio, prices]);
 
-    const controller = new AbortController();
+  useEffect(() => {
+    if (prices === undefined) return;
 
-    const f = async () => {
-      const response = await fetch("/api/amount", {
+    return withAbort((signal) => {
+      fetch("/api/sync-prices", {
         method: "post",
-        body: formData,
+        body: JSON.stringify(prices),
+        signal,
       });
-      await response.json<Amount>();
-    };
-
-    f();
-
-    return () => {
-      controller.abort();
-    };
-  }, [portfolio, rates, submit]);
+    });
+  }, [prices]);
 
   const formattedAmount = formatAmount(amount.value, amount.vs);
 
@@ -130,7 +122,8 @@ export default function Page() {
       </div>
       <header className="sticky top-0 left-0 right-0 z-10 -mt-14 flex h-14 flex-none items-end justify-between bg-transparent px-4 py-2 text-white shadow-md backdrop-blur-sm">
         <h1 className="text-3xl">
-          🍌<span className="font-bold">Cryptid</span>{" "}
+          <span className="hidden sm:inline">🍌</span>
+          <span className="font-bold">Cryptid</span>{" "}
           <span className="hidden text-gray-200 sm:inline">portfolio</span>
         </h1>
 
@@ -147,8 +140,8 @@ export default function Page() {
       <main className="relative flex-grow">
         <Outlet
           context={useMemo(
-            () => ({ amount, portfolio, rates }),
-            [amount, portfolio, rates]
+            (): OutletData<T> => ({ amount, portfolio, prices }),
+            [amount, portfolio, prices]
           )}
         />
       </main>
@@ -191,11 +184,11 @@ const AmountTitle = ({ text }: AmountTitleProps) => {
         } else {
           const charCode = d.charCodeAt(0);
           return (
-            <>
-              <LetterAppear key={i} letter={d} />
+            <Fragment key={i}>
+              <LetterAppear letter={d} />
               {charCode === 32 ||
                 (charCode === 160 && <br className="sm:hidden" />)}
-            </>
+            </Fragment>
           );
         }
       })}
@@ -328,43 +321,33 @@ const LetterAppear = ({ letter }: WordAppearProps) => {
   );
 };
 
-const useRates = <T extends Vs>(vs: T, portfolio: SerializedPoint) => {
-  const [rates, setRates] = useState<Rates<T>>();
+const usePrices = <T extends Vs>(
+  vs: T,
+  portfolio: SerializedPoint,
+  defaultPrices: Prices<T>
+) => {
+  const [prices, setPrices] = useState<Prices<T>>(defaultPrices);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const f = async () => {
+    return withAbort(async (signal) => {
       const url = new URL("https://api.coingecko.com/api/v3/simple/price");
       const ids = portfolio.list.map((c) => c.id).join();
 
       url.searchParams.set("ids", ids);
       url.searchParams.set("vs_currencies", vs);
+      url.searchParams.set("include_24hr_vol", "true");
+      url.searchParams.set("include_24hr_change", "true");
+      url.searchParams.set("include_last_updated_at", "true");
+      url.searchParams.set("include_market_cap", "true");
 
-      const response = await fetch(url, { signal: controller.signal });
-      const coins: Record<string, { [key in T]: number }> =
-        await response.json();
+      const response = await fetch(url, { signal });
+      const coins: Prices<T>["coins"] = await response.json();
 
-      setRates({ vs, coins });
-    };
-
-    f();
-
-    return () => {
-      controller.abort();
-    };
+      setPrices({ vs, coins });
+    });
   }, [portfolio, vs]);
 
-  return rates;
-};
-
-const sumTotal = <T extends Vs>(
-  rates: Rates<T>,
-  portfolio: SerializedPoint
-) => {
-  return portfolio.list.reduce(
-    (acc, c) => rates.coins[c.id][rates.vs] * c.amount + acc,
-    0
-  );
+  return prices;
 };
 
 const digits = new Set([...new Array(10).keys()].map((k) => k.toString()));

@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  ShouldReloadFunction,
 } from "@remix-run/react";
 import type { MetaFunction, LinksFunction } from "@remix-run/cloudflare";
 import styles from "./tailwind.css";
@@ -40,6 +41,8 @@ export const meta: MetaFunction = () => {
     description: "This is my personal crypto portfolio website.",
   };
 };
+
+export const unstable_shouldReload: ShouldReloadFunction = () => false;
 
 export default function App() {
   return (

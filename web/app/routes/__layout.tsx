@@ -1,4 +1,9 @@
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  Outlet,
+  ShouldReloadFunction,
+  useLoaderData,
+} from "@remix-run/react";
 import { cx, sumTotal, withAbort, formatAmount } from "app/helpers";
 import { useAppear } from "app/hooks";
 import {
@@ -47,6 +52,9 @@ export const loader: LoaderFunction = async ({
 
   return { amount, portfolio, prices };
 };
+
+export const unstable_shouldReload: ShouldReloadFunction = ({ submission }) =>
+  submission !== undefined;
 
 export default function Page<T extends Vs>() {
   const {

@@ -1,6 +1,11 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { ActionFunction, redirect } from "@remix-run/cloudflare";
-import { Form, useNavigate, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  ShouldReloadFunction,
+  useNavigate,
+  useSearchParams,
+} from "@remix-run/react";
 import { Field } from "app/components/atoms/Field";
 import { Input } from "app/components/atoms/Input";
 import { CoinInput } from "app/components/molecules/CoinInput";
@@ -36,6 +41,9 @@ export const action: ActionFunction = async ({ request, context }) => {
   await call(p, "set", { ...metadata, amount: Number.parseFloat(amount) });
   return redirect("/coins");
 };
+
+export const unstable_shouldReload: ShouldReloadFunction = ({ submission }) =>
+  submission !== undefined;
 
 export default function Page() {
   const navigate = useNavigate();

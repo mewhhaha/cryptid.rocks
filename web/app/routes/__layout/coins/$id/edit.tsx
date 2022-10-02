@@ -6,6 +6,7 @@ import {
 } from "@remix-run/cloudflare";
 import {
   Form,
+  ShouldReloadFunction,
   useLoaderData,
   useNavigate,
   useSearchParams,
@@ -50,6 +51,9 @@ export const loader: LoaderFunction = async ({ context, request, params }) => {
   if (coin === undefined) return redirect("/coins");
   return coin;
 };
+
+export const unstable_shouldReload: ShouldReloadFunction = ({ submission }) =>
+  submission !== undefined;
 
 export default function Page() {
   const navigate = useNavigate();

@@ -32,12 +32,14 @@ importers:
       '@remix-run/eslint-config': ^1.7.2
       '@remix-run/react': ^1.7.2
       '@remix-run/server-runtime': ^1.7.2
+      '@types/invariant': ^2.2.35
       '@types/node': ^18.7.23
       '@types/react': ^18.0.21
       '@types/react-dom': ^18.0.6
       autoprefixer: ^10.4.11
       ditty: workspace:^
       eslint: ^8.24.0
+      invariant: ^2.2.4
       npm-run-all: ^4.1.5
       portfolio: workspace:^
       postcss: ^8.4.17
@@ -72,12 +74,14 @@ importers:
       '@remix-run/eslint-config': 1.7.2_2arap3zrpdsgaavggmaateumgu
       '@remix-run/react': 1.7.2_biqbaboplfbrettd7655fr4n2y
       '@remix-run/server-runtime': 1.7.2_biqbaboplfbrettd7655fr4n2y
+      '@types/invariant': 2.2.35
       '@types/node': 18.7.23
       '@types/react': 18.0.21
       '@types/react-dom': 18.0.6
       autoprefixer: 10.4.12_postcss@8.4.17
       ditty: link:../packages/ditty
       eslint: 8.24.0
+      invariant: 2.2.4
       npm-run-all: 4.1.5
       portfolio: link:../workers/portfolio
       postcss: 8.4.17
@@ -2308,6 +2312,10 @@ packages:
 
   /@types/http-cache-semantics/4.0.1:
     resolution: {integrity: sha512-SZs7ekbP8CN0txVG2xVRH6EgKmEm31BOxA07vkFaETzZz1xh+cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn+iRPQ==}
+    dev: true
+
+  /@types/invariant/2.2.35:
+    resolution: {integrity: sha512-DxX1V9P8zdJPYQat1gHyY0xj3efl8gnMVjiM9iCY6y27lj+PoQWkgjt8jDqmovPqULkKVpKRg8J36iQiA+EtEg==}
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -5232,6 +5240,12 @@ packages:
   /internmap/1.0.1:
     resolution: {integrity: sha512-lDB5YccMydFBtasVtxnZ3MRBHuaoE8GKsppq+EchKL2U4nK/DmEpPHNH8MZe5HkMtpSiTSOZwfN0tzYjO/lJEw==}
     dev: false
+
+  /invariant/2.2.4:
+    resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
+    dependencies:
+      loose-envify: 1.4.0
+    dev: true
 
   /ipaddr.js/1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}

@@ -1,3 +1,4 @@
+import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { CurrencyYenIcon, PlusCircleIcon } from "@heroicons/react/24/solid";
 import { Link, Outlet, useOutletContext } from "@remix-run/react";
 import { ChartPortfolio, ChartPriceHistory } from "app/components";
@@ -6,7 +7,7 @@ import { cx, formatAmount, formatPercentage, getPrice } from "app/helpers";
 import { Vs } from "app/types";
 import { OutletData } from "../__layout";
 
-export default function Page<T extends Vs>() {
+export default function CoinOptions<T extends Vs>() {
   const { prices, portfolio } = useOutletContext<OutletData<T>>();
 
   return (
@@ -61,6 +62,21 @@ export default function Page<T extends Vs>() {
                         {`24h ${formatPercentage(change24h / 100, true)}`}
                       </span>
                     </h1>
+
+                    <div className="mb-2 flex space-x-4">
+                      <OptionButton
+                        to={`/coins/${c.id}/edit`}
+                        icon={<PencilIcon />}
+                      >
+                        Edit
+                      </OptionButton>
+                      <OptionButton
+                        to={`/coins/${c.id}/delete`}
+                        icon={<TrashIcon />}
+                      >
+                        Delete
+                      </OptionButton>
+                    </div>
 
                     <div className="rounded-md bg-black shadow-md">
                       <div className="rounded-md border bg-gradient-to-r from-blue-600/50 via-orange-600/10 to-transparent p-4 text-2xl">
@@ -123,7 +139,7 @@ const EmptyState = () => {
         Get started by adding a coin.
       </p>
       <div className="mt-6">
-        <Link to="/coins/new">
+        <Link to="/coins/new" replace>
           <button
             type="button"
             className="inline-flex items-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
@@ -137,5 +153,27 @@ const EmptyState = () => {
         </Link>
       </div>
     </div>
+  );
+};
+
+type OptionButtonProps = {
+  to: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+};
+
+const OptionButton = ({ to, icon, children }: OptionButtonProps) => {
+  return (
+    <Link to={to}>
+      <button
+        className="flex items-center rounded-md px-4 py-2 text-white hover:bg-gray-900/90"
+        tabIndex={-1}
+      >
+        <span aria-hidden="true" className="mr-1 inline-block h-5 w-5">
+          {icon}
+        </span>
+        {children}
+      </button>
+    </Link>
   );
 };

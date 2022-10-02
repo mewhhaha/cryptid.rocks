@@ -55,7 +55,7 @@ export default function App() {
           <script src="https://cdn.tailwindcss.com" />
         )}
       </head>
-      <body className="relative flex h-full flex-col bg-black text-white">
+      <body className="relative flex flex-col bg-black text-white">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

@@ -14,8 +14,8 @@ import { Amount, isVs, Prices, validVs, Vs } from "app/types";
 import { LoaderFunction } from "@remix-run/cloudflare";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { SerializedPoint } from "portfolio";
-import { call, client } from "ditty";
 import Coingecko from "../images/coingecko.svg";
+import { loadPortfolio } from "app/helpers/loader.server";
 
 type LoaderData = {
   portfolio: SerializedPoint;
@@ -29,15 +29,6 @@ export type OutletData<T extends Vs> = {
   prices: Prices<T>;
 };
 
-const mockedList = [
-  { id: "polkadot", name: "Polkadot", symbol: "dot", amount: 845 },
-  { id: "nano", name: "Nano", symbol: "xno", amount: 4776 },
-  { id: "ethereum", name: "Ethereum", symbol: "eth", amount: 1.7114 },
-  { id: "moonbeam", name: "Moonbeam", symbol: "glmr", amount: 201.1747 },
-  { id: "matic-network", name: "Polygon", symbol: "matic", amount: 13173 },
-  { id: "adex", name: "Ambire AdEx", symbol: "adx", amount: 15870 },
-];
-
 export const loader: LoaderFunction = async ({
   request,
   context,
@@ -50,23 +41,7 @@ export const loader: LoaderFunction = async ({
   const defaultPrices: Prices<Vs> = { coins: {}, vs: "usd" };
   const prices = cachedPrices ?? defaultPrices;
 
-  if (process.env.NODE_ENV !== "production") {
-    const now = new Date().toISOString();
-    const mockPortfolio = {
-      updatedAt: now,
-      list: mockedList.map((p) => ({ ...p, updatedAt: now })),
-    };
-    return {
-      portfolio: {
-        updatedAt: now,
-        list: mockedList.map((p) => ({ ...p, updatedAt: now })),
-      },
-      amount: { value: sumTotal(prices, mockPortfolio), vs: prices.vs },
-      prices,
-    };
-  }
-  const p = client(request, context.PORTFOLIO_DO, sub);
-  const portfolio = await call(p, "latest");
+  const portfolio = await loadPortfolio(sub, request, context);
 
   const amount = { value: sumTotal(prices, portfolio), vs: prices.vs };
 
@@ -236,6 +211,7 @@ const HeaderNav = ({ to, icon, children }: HeaderNavProps) => {
       <Link
         tabIndex={-1}
         to={to}
+        replace
         className="flex transform items-center transition-transform hover:scale-105 hover:text-orange-400"
       >
         <span className="mr-1 inline h-6 w-6">{icon}</span>

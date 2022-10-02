@@ -64,7 +64,20 @@ export class Portfolio extends CallableDurableObject {
     this.storage.put("latest", this.current);
     this.storage.put(dateKey(now), this.current);
 
-    return serialize("ok");
+    return serialize(this.current);
+  }
+
+  update(id: string, amount: number) {
+    const now = new Date();
+
+    this.current.list = this.current.list.map((c) =>
+      c.id === id ? { ...c, amount, updatedAt: now } : c
+    );
+
+    this.storage.put("latest", this.current);
+    this.storage.put(dateKey(now), this.current);
+
+    return serialize(this.current);
   }
 
   remove(id: string) {
@@ -79,7 +92,7 @@ export class Portfolio extends CallableDurableObject {
     this.storage.put("latest", this.current);
     this.storage.put(dateKey(now), this.current);
 
-    return serialize("ok");
+    return serialize(this.current);
   }
 
   latest() {

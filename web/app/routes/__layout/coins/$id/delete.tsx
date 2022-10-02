@@ -1,46 +1,44 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { ActionFunction, redirect } from "@remix-run/cloudflare";
-import { Form, useNavigate, useSearchParams } from "@remix-run/react";
+import {
+  ActionFunction,
+  LoaderFunction,
+  redirect,
+} from "@remix-run/cloudflare";
+import { Form, useLoaderData, useNavigate } from "@remix-run/react";
 import { Field } from "app/components/atoms/Field";
 import { Input } from "app/components/atoms/Input";
-import { CoinInput } from "app/components/molecules/CoinInput";
+import { loadPortfolio } from "app/helpers/loader.server";
 import { call, client } from "ditty";
+import { SerializedCoin } from "portfolio";
 import { Fragment } from "react";
+import invariant from "invariant";
+import { escapeRegex } from "app/helpers";
 
-export const action: ActionFunction = async ({ request, context }) => {
-  const formData = await request.formData();
-  const id = formData.get("coin")?.toString();
-  const amount = formData.get("amount")?.toString();
-
-  if (amount === undefined || id === undefined) {
-    return new Response("missing form values", { status: 422 });
-  }
-
-  if (Number.parseFloat(amount) < 0) {
-    return new Response("amount is negative", { status: 422 });
-  }
-
-  const { metadata } = await context.COINS_KV.getWithMetadata<{
-    id: string;
-    symbol: string;
-    name: string;
-  }>(id);
-
-  if (metadata === null) {
-    return new Response("missing metadata", { status: 422 });
-  }
+export const action: ActionFunction = async ({ request, context, params }) => {
+  const id = params["id"];
+  invariant(id, "part of route");
 
   const sub = context.JWT.payload.sub;
 
   const p = client(request, context.PORTFOLIO_DO, sub);
-  await call(p, "set", { ...metadata, amount: Number.parseFloat(amount) });
+  await call(p, "remove", id);
   return redirect("/coins");
+};
+
+export const loader: LoaderFunction = async ({ context, request, params }) => {
+  const id = params["id"];
+  const sub = context.JWT.payload.sub;
+
+  const portfolio = await loadPortfolio(sub, request, context);
+
+  const coin = portfolio.list.find((c) => c.id === id);
+  if (coin === undefined) return redirect("/coins");
+  return coin;
 };
 
 export default function Page() {
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
-
+  const coin = useLoaderData<SerializedCoin>();
   const onClose = () => navigate("/coins", { replace: true });
 
   return (
@@ -62,12 +60,6 @@ export default function Page() {
           <Form
             method="post"
             className="flex min-h-full items-center justify-center p-4 text-center"
-            onChange={(event) => {
-              const formData = new FormData(event.currentTarget);
-              const coin = formData.get("coin")?.toString() ?? "";
-              const amount = formData.get("amount")?.toString() ?? "0";
-              setParams({ coin, amount }, { replace: true });
-            }}
           >
             <Transition.Child
               as={Fragment}
@@ -83,29 +75,21 @@ export default function Page() {
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
                 >
-                  Pick a coin to add
+                  Delete {coin.name}
                 </Dialog.Title>
                 <div className="mt-2 space-y-2">
                   <p className="text-sm text-gray-500">
-                    Fill in the form to add a new coin to your portfolio.
+                    Fill in the form with{" "}
+                    <span className="text-red-600">`{coin.name}`</span> to
+                    delete
                   </p>
-                  <Field title="Coin" htmlFor="coin">
-                    <CoinInput
-                      required
-                      id="coin"
-                      name="coin"
-                      defaultValue={params.get("coin") ?? ""}
-                    />
-                  </Field>
-
-                  <Field title="Amount" htmlFor="amount">
+                  <Field title="Confirmation" htmlFor="confirmation">
                     <Input
                       id="amount"
                       required
-                      type="number"
-                      step="0.000001"
-                      name="amount"
-                      defaultValue={params.get("amount") ?? 0}
+                      pattern={`^${escapeRegex(coin.name)}$`}
+                      type="text"
+                      placeholder={coin.name}
                       min={0}
                     />
                   </Field>
@@ -114,9 +98,9 @@ export default function Page() {
                 <div className="mt-4">
                   <button
                     type="submit"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
                   >
-                    Got it, thanks!
+                    Delete
                   </button>
                 </div>
               </Dialog.Panel>

@@ -1,3 +1,4 @@
+import { escapeRegex } from "app/helpers";
 import { Coin } from "app/types";
 import { useState, useEffect, useId } from "react";
 import { Input, InputProps } from "../atoms/Input";
@@ -62,7 +63,3 @@ const useCoins = () => {
 
   return { coins, query, setQuery };
 };
-
-function escapeRegex(string: string) {
-  return string.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
-}

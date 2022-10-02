@@ -1,4 +1,3 @@
-import { Dialog, Transition } from "@headlessui/react";
 import {
   ActionFunction,
   LoaderFunction,
@@ -11,13 +10,11 @@ import {
   useNavigate,
   useSearchParams,
 } from "@remix-run/react";
-import { Field } from "app/components/atoms/Field";
-import { Input } from "app/components/atoms/Input";
-import { loadPortfolio } from "app/helpers/loader.server";
+import { loadPortfolio } from "app/helpers";
 import { call, client } from "ditty";
 import { SerializedCoin } from "portfolio";
-import { Fragment } from "react";
 import invariant from "invariant";
+import { Modal, Field, Input } from "app/components";
 
 export const action: ActionFunction = async ({ request, context, params }) => {
   const id = params["id"];
@@ -62,76 +59,41 @@ export default function Page() {
   const onClose = () => navigate("/coins", { replace: true });
 
   return (
-    <Transition appear show as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 overflow-y-auto">
-          <Form
-            method="post"
-            className="flex min-h-full items-center justify-center p-4 text-center"
-            onChange={(event) => {
-              const formData = new FormData(event.currentTarget);
-              const amount = formData.get("amount")?.toString() ?? "0";
-              setParams({ amount }, { replace: true });
-            }}
-          >
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
-                >
-                  Edit {coin.name}
-                </Dialog.Title>
-                <div className="mt-2 space-y-2">
-                  <p className="text-sm text-gray-500">
-                    Fill in the form to edit the amount
-                  </p>
-                  <Field title="Amount" htmlFor="amount">
-                    <Input
-                      id="amount"
-                      required
-                      type="number"
-                      step="0.000001"
-                      name="amount"
-                      defaultValue={params.get("amount") ?? coin.amount}
-                      min={0}
-                    />
-                  </Field>
-                </div>
-
-                <div className="mt-4">
-                  <button
-                    type="submit"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200"
-                  >
-                    Save
-                  </button>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </Form>
+    <Modal title={`Edit ${coin.name}`} onClose={onClose}>
+      <Form
+        method="post"
+        onChange={(event) => {
+          const formData = new FormData(event.currentTarget);
+          const amount = formData.get("amount")?.toString() ?? "0";
+          setParams({ amount }, { replace: true });
+        }}
+      >
+        <div className="mt-2 space-y-2">
+          <p className="text-sm text-gray-500">
+            Fill in the form to edit the amount
+          </p>
+          <Field title="Amount" htmlFor="amount">
+            <Input
+              id="amount"
+              required
+              type="number"
+              step="0.000001"
+              name="amount"
+              defaultValue={params.get("amount") ?? coin.amount}
+              min={0}
+            />
+          </Field>
         </div>
-      </Dialog>
-    </Transition>
+
+        <div className="mt-4">
+          <button
+            type="submit"
+            className="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200"
+          >
+            Save
+          </button>
+        </div>
+      </Form>
+    </Modal>
   );
 }

@@ -93,7 +93,7 @@ export default function Page<T extends Vs>() {
   const formattedAmount = formatAmount(amount.value, amount.vs);
 
   return (
-    <>
+    <div className="h-full w-full overflow-auto">
       <div className="sticky -top-[20.5rem] z-10 flex h-96 w-full flex-none items-center justify-center overflow-hidden">
         <img
           srcSet={`${S225} 225w, ${S450} 450w, ${S900} 900w, ${S1800} 1800w, ${S3600} 3600w`}
@@ -149,7 +149,7 @@ export default function Page<T extends Vs>() {
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
 

@@ -1,6 +1,6 @@
 export type Coin = { id: string; name: string; symbol: string };
 
-export type Amount = { value: number; vs: Vs };
+export type Amount = { value: number; vs: Vs; change24h: number };
 
 export type Price<T extends Vs> = {
   [key in

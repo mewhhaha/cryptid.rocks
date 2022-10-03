@@ -4,17 +4,28 @@ import {
   ShouldReloadFunction,
   useLoaderData,
 } from "@remix-run/react";
-import { cx, sumTotal, withAbort, formatAmount } from "app/helpers";
+import {
+  cx,
+  sumTotal,
+  sumChange24h,
+  withAbort,
+  formatAmount,
+} from "app/helpers";
 import { useAppear } from "app/hooks";
 import {
   ArrowLeftOnRectangleIcon,
   PlusCircleIcon,
 } from "@heroicons/react/20/solid";
-import S3600 from "../images/splash_3600.jpg";
-import S1800 from "../images/splash_1800.jpg";
-import S900 from "../images/splash_900.jpg";
-import S450 from "../images/splash_450.jpg";
-import S225 from "../images/splash_225.jpg";
+import SP3600 from "../images/splash_3600.jpg";
+import SP1800 from "../images/splash_1800.jpg";
+import SP900 from "../images/splash_900.jpg";
+import SP450 from "../images/splash_450.jpg";
+import SP225 from "../images/splash_225.jpg";
+import SN3600 from "../images/splash-2_3600.jpg";
+import SN1800 from "../images/splash-2_1800.jpg";
+import SN900 from "../images/splash-2_900.jpg";
+import SN450 from "../images/splash-2_450.jpg";
+import SN225 from "../images/splash-2_225.jpg";
 import { Amount, isVs, Prices, validVs, Vs } from "app/types";
 import { LoaderFunction } from "@remix-run/cloudflare";
 import { Fragment, useEffect, useMemo, useState } from "react";
@@ -48,7 +59,11 @@ export const loader: LoaderFunction = async ({
 
   const portfolio = await loadPortfolio(sub, request, context);
 
-  const amount = { value: sumTotal(prices, portfolio), vs: prices.vs };
+  const amount = {
+    value: sumTotal(prices, portfolio),
+    vs: prices.vs,
+    change24h: sumChange24h(prices, portfolio),
+  };
 
   return { amount, portfolio, prices };
 };
@@ -72,6 +87,7 @@ export default function Page<T extends Vs>() {
     if (prices === undefined) return;
     const amount = {
       value: sumTotal(prices, portfolio),
+      change24h: sumChange24h(prices, portfolio),
       vs: prices?.vs,
       updatedAt: new Date().toISOString(),
     };
@@ -92,13 +108,27 @@ export default function Page<T extends Vs>() {
 
   const formattedAmount = formatAmount(amount.value, amount.vs);
 
+  const totalNegative = sumChange24h(prices, portfolio) < 0;
+
   return (
-    <div className="h-full w-full overflow-auto">
+    <div className="h-full w-full overflow-y-auto">
       <div className="sticky -top-[20.5rem] z-10 flex h-96 w-full flex-none items-center justify-center overflow-hidden">
         <img
-          srcSet={`${S225} 225w, ${S450} 450w, ${S900} 900w, ${S1800} 1800w, ${S3600} 3600w`}
-          src={S225}
-          className="absolute inset-0 h-full w-full object-cover"
+          srcSet={`${SN225} 225w, ${SN450} 450w, ${SN900} 900w, ${SN1800} 1800w, ${SN3600} 3600w`}
+          src={SN225}
+          className={cx(
+            "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
+            totalNegative ? "opacity-100" : "opacity-0"
+          )}
+          alt="nebula red stars and a blue hand reaching out"
+        />
+        <img
+          srcSet={`${SP225} 225w, ${SP450} 450w, ${SP900} 900w, ${SP1800} 1800w, ${SP3600} 3600w`}
+          src={SP225}
+          className={cx(
+            "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
+            totalNegative ? "opacity-0" : "opacity-100"
+          )}
           alt="nebula with tiny astronaut and tiny rocket"
         />
         <AmountTitle key={formattedAmount} text={formattedAmount} />

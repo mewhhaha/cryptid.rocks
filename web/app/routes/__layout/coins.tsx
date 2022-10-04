@@ -19,14 +19,10 @@ export default function CoinOptions<T extends Vs>() {
   const { prices, portfolio } = useOutletContext<OutletData<T>>();
 
   const sortedAscending = portfolio.list
-    .map(
-      (c) =>
-        [
-          c.name,
-          formatAmount(c.amount, prices.vs),
-          getPrice(prices, c.id).change24h,
-        ] as const
-    )
+    .map((c) => {
+      const { change24h, value } = getPrice(prices, c.id);
+      return [c.name, formatAmount(value, prices.vs, 2), change24h] as const;
+    })
     .sort(([, , a], [, , b]) => a - b);
 
   const lowest = sortedAscending[0];
@@ -94,7 +90,7 @@ export default function CoinOptions<T extends Vs>() {
 
           <ul className="relative mb-12 w-full divide-y">
             {portfolio.list.map((c) => {
-              const { change24h } = getPrice(prices, c.id);
+              const { change24h, value } = getPrice(prices, c.id);
 
               return (
                 <li key={c.id}>
@@ -133,8 +129,13 @@ export default function CoinOptions<T extends Vs>() {
                         <h1 className="my-auto text-base font-bold sm:text-xl lg:text-3xl">
                           {c.name}
                         </h1>
-                        <div className="my-auto text-base sm:text-lg lg:text-2xl">
-                          {`${c.amount} ${c.symbol}`}
+                        <div className="my-auto">
+                          <span className="text-base sm:text-lg lg:text-2xl">
+                            {`${c.amount} ${c.symbol} `}
+                          </span>
+                          <span className="text-sm sm:text-base lg:text-lg">
+                            ({formatAmount(c.amount * value, prices.vs)})
+                          </span>
                         </div>
                         <div
                           className={cx(
@@ -173,11 +174,11 @@ type TrendingTagProps = {
 
 const TrendingTag = ({ name, value, percentage }: TrendingTagProps) => {
   return (
-    <div className="flex flex-col items-center justify-center rounded-md border bg-black px-4 py-2 sm:flex-row sm:items-end">
+    <div className="flex flex-col items-center justify-center rounded-md border bg-black px-4 py-2 lg:flex-row lg:items-end">
       <span className="mr-2 text-base text-white sm:text-xl md:text-2xl">
         {name}
       </span>
-      <span className="mr-2 hidden text-base font-bold sm:text-xl md:text-2xl lg:inline">
+      <span className="mr-2 text-base font-bold sm:text-xl md:text-2xl">
         {value}
       </span>
       <span

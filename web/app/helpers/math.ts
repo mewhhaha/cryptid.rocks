@@ -1,22 +1,22 @@
 import { Vs, Prices } from "app/types";
-import { SerializedPoint } from "portfolio";
+import { Portfolio } from "./db.server";
 
 export const sumTotal = <T extends Vs>(
   prices: Prices<T>,
-  portfolio: SerializedPoint
+  portfolio: Portfolio[],
 ) => {
-  return portfolio.list.reduce(
+  return portfolio.reduce(
     (acc, c) => getValuedAt(prices, c.id) * c.amount + acc,
-    0
+    0,
   );
 };
 
 export const sumChange24h = <T extends Vs>(
   prices: Prices<T>,
-  portfolio: SerializedPoint
+  portfolio: Portfolio[],
 ) => {
   const now = sumTotal(prices, portfolio);
-  const before = portfolio.list.reduce((acc, c) => {
+  const before = portfolio.reduce((acc, c) => {
     const { change24h, value } = getPrice(prices, c.id);
     return (value / change24h) * c.amount + acc;
   }, 0);
@@ -28,7 +28,7 @@ export const getValuedAt = <T extends Vs>(prices: Prices<T>, id: string) =>
 
 export const getPrice = <T extends Vs>(
   prices: Prices<T>,
-  id: string
+  id: string,
 ): {
   value: number;
   change24h: number;

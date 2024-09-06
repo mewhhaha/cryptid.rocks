@@ -1,18 +1,9 @@
 node_modules
 
-.cache
-build
-tailwind.css
-
+/.cache
+/build
 .env
-
-dist
-
-.mf
-
-
-functions/*
-!functions/_middleware.ts
-
 .dev.vars
+
 .wrangler
+

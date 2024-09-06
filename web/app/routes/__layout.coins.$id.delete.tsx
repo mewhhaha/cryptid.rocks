@@ -1,43 +1,59 @@
 import {
-  ActionFunction,
-  LoaderFunction,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
   redirect,
 } from "@remix-run/cloudflare";
 import { Form, useLoaderData, useNavigate } from "@remix-run/react";
 import { Field } from "app/components/atoms/Field";
 import { Input } from "app/components/atoms/Input";
-import { loadPortfolio } from "app/helpers/loader.server";
-import { call, client } from "ditty";
-import { SerializedCoin } from "portfolio";
-import invariant from "invariant";
-import { escapeRegex } from "app/helpers";
-import { Modal } from "app/components";
+import { Modal } from "~/components/molecules/Modal";
+import { authenticate } from "~/helpers/auth.server";
+import { Table } from "~/helpers/db.server";
+import { invariant } from "~/helpers/invariant";
+import { escapeRegex } from "~/helpers/regex";
 
-export const action: ActionFunction = async ({ request, context, params }) => {
-  const id = params["id"];
+export const action = async ({
+  request,
+  context: { cloudflare: cf },
+  params: { id },
+}: ActionFunctionArgs) => {
+  const user = await authenticate(cf, request);
   invariant(id, "part of route");
 
-  const sub = context.JWT.payload.sub;
+  const result = await cf.env.DB.prepare(
+    "DELETE FROM coins WHERE id = ? AND user_id = ?",
+  )
+    .bind(id, user.id)
+    .run();
 
-  const p = client(request, context.PORTFOLIO_DO, sub);
-  await call(p, "remove", id);
-  return redirect("/coins");
+  if (result.success) {
+    return redirect("/coins");
+  } else {
+    return { success: false, message: "Failed to delete coin" };
+  }
 };
 
-export const loader: LoaderFunction = async ({ context, request, params }) => {
-  const id = params["id"];
-  const sub = context.JWT.payload.sub;
+export const loader = async ({
+  context: { cloudflare: cf },
+  request,
+  params: { id },
+}: LoaderFunctionArgs) => {
+  const user = await authenticate(cf, request);
+  invariant(id, "part of route");
 
-  const portfolio = await loadPortfolio(sub, request, context);
+  const coin = await cf.env.DB.prepare(
+    "SELECT (id, name) FROM portfolio WHERE id = ? AND user_id = ?",
+  )
+    .bind(id, user.id)
+    .first<Pick<Table["portfolio"], "id" | "name">>();
 
-  const coin = portfolio.list.find((c) => c.id === id);
-  if (coin === undefined) return redirect("/coins");
+  if (coin === null) throw redirect("/coins");
   return coin;
 };
 
 export default function Page() {
   const navigate = useNavigate();
-  const coin = useLoaderData<SerializedCoin>();
+  const coin = useLoaderData<typeof loader>();
   const onClose = () => navigate("/coins", { replace: true });
 
   return (

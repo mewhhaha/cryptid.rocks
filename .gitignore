@@ -11,9 +11,6 @@ dist
 .mf
 
 
-functions/*
-!functions/_middleware.ts
-
 .dev.vars
 .wrangler
 .turbo

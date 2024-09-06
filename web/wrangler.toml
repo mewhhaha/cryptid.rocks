@@ -1,5 +1,7 @@
 
-kv_namespaces = [
-  {binding = "COINS_KV", id = "ae079850d28046f48d9a5af14cb82049", preview_id = "ae079850d28046f48d9a5af14cb82049"},
-  {binding = "PRICES_KV", id = "505e9e40eff64db2801b61c9a74d89e8", preview_id = "505e9e40eff64db2801b61c9a74d89e8"},
-]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "d1-cryptid-app"
+database_id = "99b6c6c6-c0da-4f39-bd15-dfb5d4bac66ab9361fa1-0198-479a-af47-dc88951ecb67"
+migrations_dir = "./migrations"

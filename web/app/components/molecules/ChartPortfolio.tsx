@@ -6,25 +6,26 @@ import {
   SankeyNodeDatum,
   SankeySvgProps,
 } from "@nivo/sankey";
-import { formatAmount, formatPercentage, getValuedAt } from "app/helpers";
 import { Prices, Vs } from "app/types";
-import { SerializedCoin, SerializedPoint } from "portfolio";
 import { ChartColorLabel } from "./ChartColorLabel";
+import { Portfolio } from "~/helpers/db.server";
+import { formatAmount, formatPercentage } from "~/helpers/format";
+import { getValuedAt } from "~/helpers/math";
 
 type ChartPortfolioProps<T extends Vs> = {
   prices: Prices<T>;
-  portfolio: SerializedPoint;
+  portfolios: Portfolio[];
   direction: "horizontal" | "vertical";
 };
 
 export const ChartPortfolio = <T extends Vs>({
   prices,
-  portfolio,
+  portfolios,
   direction,
 }: ChartPortfolioProps<T>) => {
   return (
     <ResponsiveSankey
-      data={makeSankeyData(prices, portfolio.list)}
+      data={makeSankeyData(prices, portfolios)}
       labelOrientation={direction}
       linkTooltip={LinkTooltip}
       nodeTooltip={NodeTooltip}
@@ -134,7 +135,7 @@ const Tooltip = ({ children }: TooltipProps) => {
 
 const makeSankeyData = <T extends Vs>(
   prices: Prices<T>,
-  list: SerializedCoin[]
+  list: Portfolio[],
 ): { nodes: SankeyNodeData[]; links: SankeyLinkData[] } => {
   const nodes = [
     { id: "Portfolio", vs: prices.vs },

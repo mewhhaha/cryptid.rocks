@@ -1,14 +1,13 @@
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  ShouldReloadFunction,
+  ShouldRevalidateFunction,
 } from "@remix-run/react";
 import type { MetaFunction, LinksFunction } from "@remix-run/cloudflare";
-import styles from "./tailwind.css";
+import "./tailwind.css";
 
 export const links: LinksFunction = () => {
   return [
@@ -36,15 +35,20 @@ export const links: LinksFunction = () => {
 };
 
 export const meta: MetaFunction = () => {
-  return {
-    title: "Cryptid",
-    description: "This is my personal crypto portfolio website.",
-  };
+  return [
+    {
+      title: "Cryptid",
+    },
+    {
+      name: "description",
+      content: "This is my personal crypto portfolio website.",
+    },
+  ];
 };
 
-export const unstable_shouldReload: ShouldReloadFunction = () => false;
+export const shouldRevalidate: ShouldRevalidateFunction = () => false;
 
-export default function App() {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <head>
@@ -52,18 +56,16 @@ export default function App() {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
-        {process.env.NODE_ENV === "production" ? (
-          <link rel="stylesheet" href={styles} />
-        ) : (
-          <script src="https://cdn.tailwindcss.com" />
-        )}
       </head>
       <body className="relative flex h-full flex-col bg-black text-white">
-        <Outlet />
+        {children}
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
+}
+
+export default function App() {
+  return <Outlet />;
 }

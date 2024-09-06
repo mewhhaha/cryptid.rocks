@@ -10,8 +10,8 @@ export const Input = (props: InputProps) => {
     <input
       {...props}
       className={cx(
-        "w-full border py-2 px-3 text-sm rounded-lg leading-5 text-gray-900",
-        props.className
+        "w-full rounded-lg border px-3 py-2 text-sm leading-5 text-gray-900",
+        props.className,
       )}
     />
   );

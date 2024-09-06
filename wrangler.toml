@@ -3,5 +3,5 @@
 [[d1_databases]]
 binding = "DB"
 database_name = "d1-cryptid-app"
-database_id = "99b6c6c6-c0da-4f39-bd15-dfb5d4bac66ab9361fa1-0198-479a-af47-dc88951ecb67"
+database_id = "b9361fa1-0198-479a-af47-dc88951ecb67"
 migrations_dir = "./migrations"

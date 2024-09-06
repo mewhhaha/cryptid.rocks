@@ -28,5 +28,5 @@ CREATE TABLE IF NOT EXISTS portfolio (
     updated_at TIMESTAMP NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (coin_id) REFERENCES coins(id)
-)
+);
 

@@ -6,7 +6,7 @@ export const sumTotal = <T extends Vs>(
   portfolio: Portfolio[],
 ) => {
   return portfolio.reduce(
-    (acc, c) => getValuedAt(prices, c.id) * c.amount + acc,
+    (acc, c) => getValuedAt(prices, c.coinId) * c.amount + acc,
     0,
   );
 };
@@ -17,7 +17,7 @@ export const sumChange24h = <T extends Vs>(
 ) => {
   const now = sumTotal(prices, portfolio);
   const before = portfolio.reduce((acc, c) => {
-    const { change24h, value } = getPrice(prices, c.id);
+    const { change24h, value } = getPrice(prices, c.coinId);
     return (value / change24h) * c.amount + acc;
   }, 0);
   return now / before;

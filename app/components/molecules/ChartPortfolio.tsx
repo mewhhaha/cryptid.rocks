@@ -139,16 +139,19 @@ const makeSankeyData = <T extends Vs>(
 ): { nodes: SankeyNodeData[]; links: SankeyLinkData[] } => {
   const nodes = [
     { id: "Portfolio", vs: prices.vs },
-    ...list.map((c) => ({ id: c.name, vs: prices.vs })),
+    ...list.map((c) => ({ id: c.coinId, vs: prices.vs })),
   ];
-  const links = list.map((c) => {
-    return {
-      source: "Portfolio",
-      target: c.name,
-      value: getValuedAt(prices, c.id) * c.amount,
-      vs: prices.vs,
-    };
-  });
+  const links = list
+    .map((c) => {
+      return {
+        source: "Portfolio",
+        target: c.coinId,
+        value: getValuedAt(prices, c.coinId) * c.amount,
+        vs: prices.vs,
+      };
+    })
+    .filter((l) => l.value > 0);
 
+  console.log(nodes, links);
   return { nodes, links };
 };

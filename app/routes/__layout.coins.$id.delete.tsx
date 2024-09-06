@@ -21,7 +21,7 @@ export const action = async ({
   invariant(id, "part of route");
 
   const result = await cf.env.DB.prepare(
-    "DELETE FROM coins WHERE id = ? AND user_id = ?",
+    "DELETE FROM portfolio WHERE id = ? AND user_id = ?",
   )
     .bind(id, user.id)
     .run();
@@ -42,7 +42,7 @@ export const loader = async ({
   invariant(id, "part of route");
 
   const coin = await cf.env.DB.prepare(
-    "SELECT (id, name) FROM portfolio WHERE id = ? AND user_id = ?",
+    "SELECT id, name FROM portfolio WHERE id = ? AND user_id = ?",
   )
     .bind(id, user.id)
     .first<Pick<Table["portfolio"], "id" | "name">>();

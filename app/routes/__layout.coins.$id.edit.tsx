@@ -8,7 +8,6 @@ import {
   ShouldRevalidateFunction,
   useLoaderData,
   useNavigate,
-  useSearchParams,
 } from "@remix-run/react";
 import { type } from "arktype";
 import { authenticate } from "~/helpers/auth.server";
@@ -20,7 +19,6 @@ import { Input } from "~/components/atoms/Input";
 
 const parseFormData = type({
   amount: "string.numeric.parse >= 0",
-  name: "string",
 });
 
 export const action = async ({
@@ -41,9 +39,9 @@ export const action = async ({
   const date = new Date().toISOString();
 
   const result = await cf.env.DB.prepare(
-    "UPDATE portfolio SET amount = ?, name = ?, updated_at = ? WHERE id = ? AND user_id = ?",
+    "UPDATE portfolio SET amount = ?, updated_at = ? WHERE id = ? AND user_id = ?",
   )
-    .bind(formData.amount, formData.name, date, id, user.id)
+    .bind(formData.amount, date, id, user.id)
     .run();
 
   if (!result.success) {
@@ -62,7 +60,7 @@ export const loader = async ({
   invariant(id, "part of route");
 
   const coin = await cf.env.DB.prepare(
-    "SELECT (id, amount, name) FROM portfolio WHERE id = ? AND user_id = ?",
+    "SELECT id, amount FROM portfolio WHERE id = ? AND user_id = ?",
   )
     .bind(id, user.id)
     .first<Pick<Table["portfolio"], "id" | "amount" | "name">>();
@@ -75,20 +73,12 @@ export const shouldRevalidate: ShouldRevalidateFunction = () => false;
 
 export default function Page() {
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
   const coin = useLoaderData<typeof loader>();
   const onClose = () => navigate("/coins", { replace: true });
 
   return (
     <Modal title={`Edit ${coin.name}`} onClose={onClose}>
-      <Form
-        method="post"
-        onChange={(event) => {
-          const formData = new FormData(event.currentTarget);
-          const amount = formData.get("amount")?.toString() ?? "0";
-          setParams({ amount }, { replace: true });
-        }}
-      >
+      <Form method="post">
         <div className="mt-2 space-y-2">
           <h3 className="text-sm text-gray-500">
             Fill in the form to edit the amount
@@ -100,7 +90,7 @@ export default function Page() {
               type="number"
               step="0.000001"
               name="amount"
-              defaultValue={params.get("amount") ?? coin.amount}
+              defaultValue={coin.amount}
               min={0}
             />
           </Field>

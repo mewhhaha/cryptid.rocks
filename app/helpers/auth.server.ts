@@ -203,7 +203,6 @@ export const logout = async (cf: Cloudflare, path: string) => {
   return redirect(path, {
     headers: {
       "Set-Cookie": await cookie.serialize("", { expires: new Date(0) }),
-      "Clear-Site-Data": "cookies",
     },
   });
 };

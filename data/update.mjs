@@ -1,33 +1,44 @@
 import path from "node:path";
 import { writeFile } from "node:fs/promises";
 
-const escapeString = (value) => {
-  if (typeof value === "string") {
-    return value.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
-      switch (char) {
-        case "\0":
-          return "\\0";
-        case "\x08":
-          return "\\b";
-        case "\x09":
-          return "\\t";
-        case "\x1a":
-          return "\\z";
-        case "\n":
-          return "\\n";
-        case "\r":
-          return "\\r";
-        case '"':
-        case "'":
-        case "\\":
-          return "\\" + char;
-        case "%":
-          return "\\%"; // For LIKE statements
-      }
-    });
-  }
-  return value;
+// START https://github.com/mysqljs/sqlstring/blob/master/lib/SqlString.js
+const CHARS_GLOBAL_REGEXP = /[\0\b\t\n\r\x1a\"\'\\]/g; // eslint-disable-line no-control-regex
+const CHARS_ESCAPE_MAP = {
+  "\0": "\\0",
+  "\b": "\\b",
+  "\t": "\\t",
+  "\n": "\\n",
+  "\r": "\\r",
+  "\x1a": "\\Z",
+  '"': '""',
+  "'": "''",
+  "\\": "\\\\",
 };
+
+function escapeString(val) {
+  CHARS_GLOBAL_REGEXP.lastIndex = 0;
+  let chunkIndex = 0;
+  let escapedVal = "";
+  let match;
+
+  while ((match = CHARS_GLOBAL_REGEXP.exec(val))) {
+    escapedVal +=
+      val.slice(chunkIndex, match.index) + CHARS_ESCAPE_MAP[match[0]];
+    chunkIndex = CHARS_GLOBAL_REGEXP.lastIndex;
+  }
+
+  if (chunkIndex === 0) {
+    // Nothing was escaped
+    return "'" + val + "'";
+  }
+
+  if (chunkIndex < val.length) {
+    return "'" + escapedVal + val.slice(chunkIndex) + "'";
+  }
+
+  return "'" + escapedVal + "'";
+}
+// END
 
 const output = path.join(import.meta.dirname, "coins.sql");
 
@@ -46,14 +57,26 @@ const sql = (text, ...values) => {
     const value = values[i];
     result += text[i];
     if (value) {
-      result += `'${escapeString(values[i])}'`;
+      result += `${escapeString(values[i])}`;
     }
   }
   return result;
 };
 
-const data = coins.map(({ id, symbol, name }) => {
-  return sql`INSERT INTO coins (id, symbol, name) VALUES (${id}, ${symbol}, ${name});`;
-});
+const date = new Date().toISOString();
+
+const simpleTextRegex = /[\s'"$#a-zA-Z0-9]+/;
+
+const data = coins
+  .filter(({ id, symbol, name }) => {
+    return (
+      id.match(simpleTextRegex) &&
+      symbol.match(simpleTextRegex) &&
+      name.match(simpleTextRegex)
+    );
+  })
+  .map(({ id, symbol, name }) => {
+    return sql`REPLACE INTO coins (id, symbol, name, updated_at) VALUES (${id}, ${symbol}, ${name}, ${date});`;
+  });
 
 writeFile(output, data.join("\n"), "utf-8");

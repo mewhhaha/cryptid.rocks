@@ -23,7 +23,7 @@ export default function CoinOptions<T extends Vs>() {
 
   const sortedAscending = portfolios
     .map((c) => {
-      const { change24h, value } = getPrice(prices, c.id);
+      const { change24h, value } = getPrice(prices, c.coinId);
       return [c.name, formatAmount(value, prices.vs, 2), change24h] as const;
     })
     .sort(([, , a], [, , b]) => a - b);
@@ -93,7 +93,7 @@ export default function CoinOptions<T extends Vs>() {
 
           <ul className="relative mb-12 w-full divide-y">
             {portfolios.map((c) => {
-              const { change24h, value } = getPrice(prices, c.id);
+              const { change24h, value } = getPrice(prices, c.coinId);
 
               return (
                 <li key={c.id}>
@@ -118,7 +118,7 @@ export default function CoinOptions<T extends Vs>() {
                           </Link>
                           <a
                             tabIndex={-1}
-                            href={`https://www.coingecko.com/en/coins/${c.id}`}
+                            href={`https://www.coingecko.com/en/coins/${c.coinId}`}
                             target="_blank"
                             rel="noreferrer"
                           >

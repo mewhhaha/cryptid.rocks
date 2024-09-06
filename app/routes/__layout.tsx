@@ -1,9 +1,4 @@
-import {
-  Link,
-  Outlet,
-  ShouldRevalidateFunction,
-  useLoaderData,
-} from "@remix-run/react";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import {
   PlusCircleIcon,
   ArrowLeftStartOnRectangleIcon,
@@ -67,12 +62,6 @@ export const loader = async ({
   return { portfolios, prices };
 };
 
-export const shouldRevalidate: ShouldRevalidateFunction = ({
-  actionResult,
-}) => {
-  return !!actionResult;
-};
-
 export default function Page<T extends Vs>() {
   const { portfolios, prices: defaultPrices } = useLoaderData<typeof loader>();
 
@@ -84,7 +73,7 @@ export default function Page<T extends Vs>() {
     return {
       value: sumTotal(prices, portfolios),
       change24h: sumChange24h(prices, portfolios),
-      vs: prices?.vs,
+      vs: prices.vs,
       updatedAt: new Date().toISOString(),
     };
   }, [portfolios, prices]);
@@ -341,11 +330,25 @@ const usePrices = <T extends Vs>(
   const [prices, setPrices] = useState<Prices<T>>(defaultPrices);
 
   useEffect(() => {
+    const coinIds = new Set(portfolios.map((c) => c.coinId));
+    const priceIds = new Set(Object.keys(prices.coins));
+    if (priceIds.size === 0) {
+      const { vs: localVs, coins: localCoins } = JSON.parse(
+        localStorage.getItem("prices") ?? "{}",
+      );
+      if (localVs === vs && Object.keys(localCoins).length > 0) {
+        setPrices({ vs: localVs, coins: localCoins });
+        return;
+      }
+    }
+    if (prices.vs === vs && coinIds.isSubsetOf(priceIds)) {
+      return;
+    }
+
     return abortable(async (signal) => {
       const url = new URL("https://api.coingecko.com/api/v3/simple/price");
-      const ids = portfolios.map((c) => c.id).join();
 
-      url.searchParams.set("ids", ids);
+      url.searchParams.set("ids", [...coinIds].join());
       url.searchParams.set("vs_currencies", vs);
       url.searchParams.set("include_24hr_vol", "true");
       url.searchParams.set("include_24hr_change", "true");
@@ -355,9 +358,10 @@ const usePrices = <T extends Vs>(
       const response = await fetch(url, { signal });
       const coins: Prices<T>["coins"] = await response.json();
 
+      localStorage.setItem("prices", JSON.stringify({ vs, coins }));
       setPrices({ vs, coins });
     });
-  }, [portfolios, vs]);
+  }, [portfolios, prices.coins, prices.vs, vs]);
 
   return prices;
 };

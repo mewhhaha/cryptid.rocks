@@ -1,10 +1,5 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/cloudflare";
-import {
-  Form,
-  ShouldRevalidateFunction,
-  useNavigate,
-  useSearchParams,
-} from "@remix-run/react";
+import { Form, ShouldRevalidateFunction, useNavigate } from "@remix-run/react";
 import { type } from "arktype";
 import { useState, useEffect } from "react";
 import { Field } from "~/components/atoms/Field";
@@ -13,6 +8,7 @@ import { Modal } from "~/components/molecules/Modal";
 import { authenticate } from "~/helpers/auth.server";
 import { Table } from "~/helpers/db.server";
 import { escapeRegex } from "~/helpers/regex";
+import { abortable } from "~/helpers/request";
 import { Coin } from "~/types";
 
 const parseFormData = type({
@@ -44,7 +40,7 @@ export const action = async ({
   }
 
   const increment = cf.env.DB.prepare(
-    "UPDATE portfolio SET order = order + 1 WHERE user_id = ?",
+    "UPDATE portfolio SET priority = priority + 1 WHERE user_id = ?",
   ).bind(user.id);
 
   const values = (n: number) => new Array(n).fill("?");
@@ -81,7 +77,6 @@ export const shouldRevalidate: ShouldRevalidateFunction = () => false;
 
 export default function Page() {
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
 
   const { coins, query, setQuery } = useCoins();
   const onClose = () => navigate("/coins", { replace: true });
@@ -90,33 +85,26 @@ export default function Page() {
 
   return (
     <Modal title="Pick a coin to add" onClose={onClose}>
-      <Form
-        method="post"
-        onChange={(event) => {
-          const formData = new FormData(event.currentTarget);
-          const coin = formData.get("coin")?.toString() ?? "";
-          const amount = formData.get("amount")?.toString() ?? "0";
-          setParams({ coin, amount }, { replace: true });
-        }}
-      >
+      <Form method="post">
         <div className="mt-2 space-y-2">
           <p className="text-sm text-gray-500">
             Fill in the form to add a new coin to your portfolio.
           </p>
           <Field title="Coin" htmlFor="coin">
             <Input
+              id="coin"
               required
               list="coin-data-list"
               pattern={
                 currentCoin ? `^${escapeRegex(currentCoin.name)}$` : "^[]"
               }
+              placeholder="Ethereum"
               onChange={(event) => {
                 setQuery(event.currentTarget.value);
               }}
               onInvalid={(event) => {
                 event.currentTarget.setCustomValidity("Pick coin from list");
               }}
-              defaultValue={params.get("coin") ?? ""}
             />
             <datalist id="coin-data-list">
               {coins.map((c) => {
@@ -136,13 +124,23 @@ export default function Page() {
               type="number"
               step="0.000001"
               name="amount"
-              defaultValue={params.get("amount") ?? 0}
+              defaultValue={0}
               min={0}
             />
           </Field>
 
-          <input name="coin" type="hidden" value={currentCoin?.id} />
-          <input name="name" type="hidden" value={currentCoin?.name} />
+          <input
+            required
+            name="coinId"
+            type="hidden"
+            value={currentCoin?.id || ""}
+          />
+          <input
+            required
+            name="name"
+            type="hidden"
+            value={currentCoin?.name || ""}
+          />
         </div>
         <div className="mt-4">
           <button
@@ -162,23 +160,16 @@ const useCoins = () => {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    const controller = new AbortController();
-    const f = async () => {
+    return abortable(async (signal) => {
       const searchParams = new URLSearchParams({
         search: query.toLocaleLowerCase(),
       });
       const response = await fetch(`/api/coins?${searchParams.toString()}`, {
-        signal: controller.signal,
+        signal,
       });
       const coins: Coin[] = await response.json();
       setCoins(coins);
-    };
-
-    f();
-
-    return () => {
-      controller.abort();
-    };
+    });
   }, [query]);
 
   return { coins, query, setQuery };

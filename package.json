@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "upload": "wrangler pages publish ./public --project-name cryptid",
+    "upload": "wrangler pages deploy ./public --project-name cryptid",
     "logs": "wrangler pages deployment tail --project-name cryptid",
     "build": "remix vite:build",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",

@@ -7,7 +7,6 @@ import { Input } from "~/components/atoms/Input";
 import { Modal } from "~/components/molecules/Modal";
 import { authenticate } from "~/helpers/auth.server";
 import { Table } from "~/helpers/db.server";
-import { escapeRegex } from "~/helpers/regex";
 import { abortable } from "~/helpers/request";
 import { Coin } from "~/types";
 
@@ -95,9 +94,6 @@ export default function Page() {
               id="coin"
               required
               list="coin-data-list"
-              pattern={
-                currentCoin ? `^${escapeRegex(currentCoin.name)}$` : "^[]"
-              }
               placeholder="Ethereum"
               onChange={(event) => {
                 setQuery(event.currentTarget.value);

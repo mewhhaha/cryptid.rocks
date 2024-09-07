@@ -24,9 +24,14 @@ export default function CoinOptions<T extends Vs>() {
   const sortedAscending = portfolios
     .map((c) => {
       const { change24h, value } = getPrice(prices, c.coinId);
-      return [c.name, formatAmount(value, prices.vs, 2), change24h] as const;
+      return [
+        c.symbol,
+        c.name,
+        formatAmount(value, prices.vs, 2),
+        change24h,
+      ] as const;
     })
-    .sort(([, , a], [, , b]) => a - b);
+    .sort(([, , , a], [, , , b]) => a - b);
 
   const lowest = sortedAscending[0];
   const highest = sortedAscending[sortedAscending.length - 1];
@@ -54,15 +59,17 @@ export default function CoinOptions<T extends Vs>() {
             )}
           >
             <TrendingTag
-              name={highest[0]}
-              value={highest[1]}
-              percentage={highest[2] / 100}
+              symbol={highest[0]}
+              name={highest[1]}
+              value={highest[2]}
+              percentage={highest[3] / 100}
             />
             {highest[0] !== lowest[0] && (
               <TrendingTag
-                name={lowest[0]}
-                value={lowest[1]}
-                percentage={lowest[2] / 100}
+                symbol={lowest[0]}
+                name={lowest[1]}
+                value={lowest[2]}
+                percentage={lowest[3] / 100}
               />
             )}
           </div>
@@ -170,26 +177,27 @@ export default function CoinOptions<T extends Vs>() {
 }
 
 type TrendingTagProps = {
+  symbol: string;
   name: string;
   value: string;
   percentage: number;
 };
 
-const TrendingTag = ({ name, value, percentage }: TrendingTagProps) => {
+const TrendingTag = ({ symbol, name, value, percentage }: TrendingTagProps) => {
   return (
     <div className="flex flex-col items-center justify-center rounded-md border bg-black px-4 py-2 lg:flex-row lg:items-end">
       <span
         title={name}
         className="mr-2 truncate text-base text-white sm:text-xl md:text-2xl"
       >
-        {name}
+        {symbol}
       </span>
       <span className="mr-2 text-base font-bold sm:text-xl md:text-2xl">
         {value}
       </span>
       <span
         className={cx(
-          "flex min-w-0 flex-wrap text-base sm:text-lg md:text-xl",
+          "flex min-w-0 flex-none flex-wrap text-base sm:text-lg md:text-xl",
           percentage < 0 ? "text-pink-600" : "text-green-600",
         )}
       >

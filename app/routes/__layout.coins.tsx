@@ -178,7 +178,10 @@ type TrendingTagProps = {
 const TrendingTag = ({ name, value, percentage }: TrendingTagProps) => {
   return (
     <div className="flex flex-col items-center justify-center rounded-md border bg-black px-4 py-2 lg:flex-row lg:items-end">
-      <span className="mr-2 text-base text-white sm:text-xl md:text-2xl">
+      <span
+        title={name}
+        className="mr-2 truncate text-base text-white sm:text-xl md:text-2xl"
+      >
         {name}
       </span>
       <span className="mr-2 text-base font-bold sm:text-xl md:text-2xl">

@@ -141,7 +141,7 @@ export default function Page<T extends Vs>() {
         </h1>
 
         <div className="flex space-x-6">
-          <SelectVs value={amount.vs} onChange={setVs} />
+          <SelectVs value={vs} onChange={setVs} />
           <HeaderNav to="/coins/new" icon={<PlusCircleIcon />}>
             Add coin
           </HeaderNav>

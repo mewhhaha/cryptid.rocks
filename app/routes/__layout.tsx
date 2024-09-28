@@ -23,7 +23,7 @@ import {
   Portfolio,
   Table,
 } from "~/helpers/db.server";
-import { createPricesCacheKey } from "~/helpers/prices";
+import { createUserCacheKey } from "~/helpers/prices";
 import { sumChange24h, sumTotal } from "~/helpers/math";
 import { abortable } from "~/helpers/request";
 import { formatAmount } from "~/helpers/format";
@@ -43,13 +43,25 @@ export const loader = async ({
   const user = await authenticate(cf, request);
 
   const pricesCache = await cf.caches.open("prices");
-  const cacheKey = createPricesCacheKey(user.id, request);
+  const cacheKey = createUserCacheKey(user.id, request);
   const cachedPrices: Prices<Vs> | undefined = await pricesCache
     .match(cacheKey)
     .then((r) => r?.json());
-  const defaultPrices = { coins: {}, vs: "usd" } as Prices<Vs>;
 
-  const prices = cachedPrices ?? defaultPrices;
+  const defaultCurrency = async () => {
+    const currencyCache = await cf.caches.open("currency");
+    const currencyKey: { vs: string } | undefined = await currencyCache
+      .match(cacheKey)
+      .then((r) => r?.json());
+
+    return currencyKey ?? { vs: "usd" };
+  };
+
+  let prices = cachedPrices;
+  prices ??= {
+    coins: {},
+    ...(await defaultCurrency()),
+  } as Prices<Vs>;
 
   const { results } = await cf.env.DB.prepare(
     "SELECT * FROM portfolio WHERE user_id = ?",

@@ -1,7 +1,7 @@
 import { LoaderFunction } from "@remix-run/cloudflare";
 import { type } from "arktype";
 import { authenticate } from "~/helpers/auth.server";
-import { createPricesCacheKey } from "~/helpers/prices";
+import { createUserCacheKey } from "~/helpers/prices";
 
 const parseFormData = type({
   vs: "string",
@@ -23,19 +23,30 @@ export const action: LoaderFunction = async ({
   }
 
   const now = new Date();
-  const expires = new Date(
+  const pricesExpires = new Date(
     now.getFullYear(),
     now.getMonth(),
     now.getDate() + 1,
   );
+  const currencyExpires = new Date(now.getFullYear() + 1, now.getMonth(), 1);
 
-  const cache = await cf.caches.open("prices");
-  const cacheKey = createPricesCacheKey(user.id, request);
+  const pricesCache = await cf.caches.open("prices");
+  const currencyCache = await cf.caches.open("currency");
+  const cacheKey = createUserCacheKey(user.id, request);
   const response = new Response(JSON.stringify(formData), {
     status: 200,
-    headers: { Expires: expires.toUTCString() },
+    headers: { Expires: pricesExpires.toUTCString() },
   });
-  await cache.put(cacheKey, response);
+  await Promise.all([
+    pricesCache.put(cacheKey, response),
+    currencyCache.put(
+      cacheKey,
+      new Response(JSON.stringify({ vs: formData.vs }), {
+        status: 200,
+        headers: { Expires: currencyExpires.toUTCString() },
+      }),
+    ),
+  ]);
 
   return null;
 };

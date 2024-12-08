@@ -15,7 +15,7 @@ import SN450 from "../images/splash-2_450.jpg";
 import SN225 from "../images/splash-2_225.jpg";
 import { Amount, isVs, Prices, validVs, Vs } from "app/types";
 import { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import Coingecko from "../images/coingecko.svg";
 import { authenticate } from "~/helpers/auth.server";
 import {
@@ -340,21 +340,28 @@ const usePrices = <T extends Vs>(
   defaultPrices: Prices<T>,
 ) => {
   const [prices, setPrices] = useState<Prices<T>>(defaultPrices);
+  const ref = useRef(false);
 
   useEffect(() => {
     const coinIds = new Set(portfolios.map((c) => c.coinId));
     const priceIds = new Set(Object.keys(prices.coins));
-    if (priceIds.size === 0) {
-      const { vs: localVs, coins: localCoins } = JSON.parse(
-        localStorage.getItem("prices") ?? "{}",
-      );
-      if (localVs === vs && Object.keys(localCoins).length > 0) {
-        setPrices({ vs: localVs, coins: localCoins });
+
+    // Makes it run at least once on mount
+    if (ref.current) {
+      if (priceIds.size === 0) {
+        const { vs: localVs, coins: localCoins } = JSON.parse(
+          localStorage.getItem("prices") ?? "{}",
+        );
+        if (localVs === vs && Object.keys(localCoins).length > 0) {
+          setPrices({ vs: localVs, coins: localCoins });
+          return;
+        }
+      }
+      if (prices.vs === vs && coinIds.isSubsetOf(priceIds)) {
         return;
       }
-    }
-    if (prices.vs === vs && coinIds.isSubsetOf(priceIds)) {
-      return;
+    } else {
+      ref.current = true;
     }
 
     return abortable(async (signal) => {
@@ -378,7 +385,9 @@ const usePrices = <T extends Vs>(
   return prices;
 };
 
-const digits = new Set([...new Array(10).keys()].map((k) => k.toString()));
+const digits = new Set(
+  [...Array.from({ length: 10 }).keys()].map((k) => k.toString()),
+);
 const isDigit = (s: string): s is Digit => {
   return digits.has(s);
 };

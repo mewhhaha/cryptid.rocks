@@ -267,7 +267,7 @@ type DigitAppearProps = {
 const DigitAppear = ({ digit }: DigitAppearProps) => {
   const appear = useAppear();
 
-  const digits = [...new Array(10).keys()];
+  const digits = [...Array.from({ length: 10 }).keys()];
 
   const i = Number.parseInt(digit) + 1;
   const reordered = digits.slice(i).concat(digits.slice(0, i));
